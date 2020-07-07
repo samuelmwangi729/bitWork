@@ -63,11 +63,18 @@
                     </div>
                 </div>
                 <div class="row justify-content-center">
-                  <select class="form-control text-center" style="width:50%" name="AccountType">
-                      <option label="Choose Your Account Type"></option>
-                      <option value="Freelancer">I AM A Freelancer</option>
-                      <option value="Client">Looking For A Freelancer</option>
-                  </select>
+                     <!--Start Form Group-->
+                     <div class="form-group">
+                        <label for="names" class="label-control text-center" style="color:#f2174f">
+                            <i class="fa fa-user"></i>&nbsp; Account Type
+                        </label>
+                        <select class="form-control text-center" style="width:100%" name="AccountType">
+                            <option label="Choose Your Account Type"></option>
+                            <option value="Freelancer">I AM A Freelancer</option>
+                            <option value="Client">Looking For A Freelancer</option>
+                        </select>
+                    </div>
+                    <!--End form group-->
                 </div>
                 <br>
                 <div class="row justify-content-center">

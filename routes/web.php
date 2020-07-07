@@ -20,4 +20,18 @@ Route::get('/',[
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/Dashboard/Index', 'HomeController@index')->name('home');
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/Account/Index',[
+        'uses'=>'ProfileController@index',
+        'as'=>'account'
+    ]);
+    Route::get('/Post/Project',[
+        'uses'=>'ProjectsController@create',
+        'as'=>'projects.add'
+    ]);
+    Route::post('/Project/Post',[
+        'uses'=>'ProjectsController@store',
+        'as'=>'project.bpost'
+    ]);
+});

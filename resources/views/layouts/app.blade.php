@@ -34,15 +34,13 @@
 
 
     <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 </head>
 <body id="home" data-spy="scroll" data-target="#navbar-wd" data-offset="98">
 
     <!-- LOADER -->
     <div id="preloader">
         <div class="loader">
-            <img src="images/loader.gif" alt="#" />
+            <img src="{{  asset('img/logo.png')  }}" alt="{{ config('app.name') }}" />
         </div>
     </div>
     <!-- end loader -->
@@ -60,21 +58,22 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbar-wd">
                     <ul class="navbar-nav">
-                        <li><a class="nav-link" href="/Freelancers">Find Freelancers</a></li>
-                        <li><a class="nav-link" href="/HowItWorks">How It Works</a></li>
-                        <li><a class="nav-link active" href="/Projects">Find Projects</a></li>
-						<li><a class="nav-link" href="/register">Join Us</a></li>
-                        <li><a class="nav-link" href="/login">Login</a></li>
+                        <li><a class="nav-link" href="/Freelancers" id="nav-link">Find Freelancers</a></li>
+                        <li><a class="nav-link" href="/HowItWorks" id="nav-link">How It Works</a></li>
+                        <li><a class="nav-link active" href="/Projects" id="nav-link">Find Projects</a></li>
+						<li><a class="nav-link" href="/register" id="nav-link">Join Us</a></li>
+                        <li><a class="nav-link" href="/login" id="nav-link">Login</a></li>
                         @if(Auth::check())
-                        <li<a class="dropdown-item" href="{{ route('logout') }}"
-                        onclick="event.preventDefault();
-                                      document.getElementById('logout-form').submit();">
-                         {{ __('Logout') }}
-                     </a>
-
-                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
+                        <li><a class="nav-link" href="/Dashboard/Index" id="nav-link">Account</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('logout') }}" id="nav-link"
+                                    onclick="event.preventDefault();
+                                                document.getElementById('logout-form').submit();">
+                                    {{ __('Logout') }}
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
                         </li>
                         @endif
                     </ul>

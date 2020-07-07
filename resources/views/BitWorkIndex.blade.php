@@ -7,7 +7,7 @@
     <div class="ulockd-home-slider">
         <div class="container-fluid">
             <div class="row">
-                <div class="pogoSlider" id="js-main-slider">
+                <div class="pogoSlider" id="js-main-slider" style="padding-top:0px">
                     <div class="pogoSlider-slide" style="background-image:url(img/banner-img.png);">
                         <div class="container">
                             <div class="row">

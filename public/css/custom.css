@@ -1,1 +1,15 @@
-/** ADD YOUR AWESOME CODES HERE **/
+#nav-link {
+    color: white;
+    font-weight: bold;
+    background-color: #dededc;
+}
+
+.navbar {
+    background-color: #dededc
+}
+
+#nav-link:hover {
+    color: white;
+    background-color: #f2174f;
+    border-radius: 20px
+}
