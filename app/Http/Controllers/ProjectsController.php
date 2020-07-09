@@ -79,6 +79,7 @@ class ProjectsController extends Controller
             'Slug'=>$slug,
             'Description'=>$request->ProjectDescription,
             'ProjectFile'=>$fileName,
+            'ProjectCategory'=>$request->ProjectCategory,
             'ClientId'=>$userId,
             'Budget'=>$request->ProjectBudget,
             'Bids'=>$bids,
@@ -96,7 +97,8 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
-        //
+        $project=Projects::where('ProjectId','=',$id)->get()->first();
+        return view('Projects.Single')->with('project',$project);
     }
 
     /**
@@ -131,5 +133,22 @@ class ProjectsController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function view(){
+        //the function returns projects owned by the logged In user
+        $projects=Projects::where(
+            'ClientId','=',Auth::user()->UserId
+        )->get();
+       return view('Projects.Mine')->with('projects',$projects);
+    }
+    public function completed(){
+        //the function returns projects owned by the logged In user
+        $projects=Projects::where(
+            [
+                ['ClientId','=',Auth::user()->UserId],
+                ['Status','=','0']
+            ]
+        )->get();
+       return view('Projects.Completed')->with('projects',$projects);
     }
 }

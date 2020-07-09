@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="row justify-content-center" style="padding-top:50px;padding-bottom:10px">
-    <div class="card" style="width:70%">
-       <div class="card-header">
-           <h3 class="text-center">Create Your Account With {{ config('app.name') }}</h3>
+<div class="row justify-content-center" style="padding-top:75px;padding-bottom:10px">
+    <div class="card" style="width:70%;border-radius:30px">
+       <div class="card-header" style="border-radius:200px;background-color:#f1184f !important">
+           <h3 class="text-center  text-white"><b>Create Your Account With {{ config('app.name') }}</b></h3>
        </div>
        <div class="card-body">
         <div class="form-group">

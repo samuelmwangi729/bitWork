@@ -20,6 +20,7 @@ class CreateProjectsTable extends Migration
             $table->longText('Slug');
             $table->longText('Description');
             $table->String('ProjectFile')->default(0);
+            $table->String('ProjectCategory');
             $table->String('ClientId');
             $table->String('Budget');
             $table->integer('Status')->default(0);

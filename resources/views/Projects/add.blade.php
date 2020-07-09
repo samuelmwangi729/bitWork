@@ -74,8 +74,7 @@
         </div>
         <div class="row justify-content-center">
             <label for="Description" class="label-control"><i class="fa fa-pencil"></i>&nbsp;Project Descrition</label>
-            <textarea  style="width:90%;height:300px" name="ProjectDescription" class="input-danger" style="border: 1px solid-red">
-            </textarea>
+            <textarea  style="width:90%;height:300px" name="ProjectDescription" class="input-danger" style="border: 1px solid-red"></textarea>
             @error('ProjectDescription')
             <span style="color:red">
                 Please Write your Project Descrition

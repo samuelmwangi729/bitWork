@@ -18,14 +18,14 @@
             <li class="active open"><a href="{{ route('home') }}"><i class="fa fa-home"></i><span>Dashboard</span></a></li>
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-folder"></i><span>My Projects</span></a>
                 <ul class="ml-menu">
-                    <li><a href="/Post/Project">Post A Project</a></li>
-                    <li><a href="/Projects/View">View Projects</a></li>
-                    <li><a href="/Completed/Projects">Completed Projects</a></li>
+                    <li><a href="{{ route('projects.add') }}">Post A Project</a></li>
+                    <li><a href="{{ route('projects.view') }}">View Projects</a></li>
+                    <li><a href="{{ route('projects.completed') }}">Completed Projects</a></li>
                 </ul>
             </li>  
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-briefcase"></i><span>Browse Jobs</span></a>
                 <ul class="ml-menu">
-                    <li><a href="mail-inbox.html">Email</a></li>
+                    <li><a href="{{ route('jobs') }}">View Jobs</a></li>
                     <li><a href="chat.html">Chat Apps</a></li>
                     <li><a href="events.html">Calendar</a></li>
                     <li><a href="contact.html">Contact</a></li>                    

@@ -30,6 +30,22 @@ Route::group(['middleware' => ['auth']], function () {
         'uses'=>'ProjectsController@create',
         'as'=>'projects.add'
     ]);
+    Route::get('/Projects/View',[
+        'uses'=>'ProjectsController@view',
+        'as'=>'projects.view'
+    ]);
+    Route::get('/Projects/Index',[
+        'uses'=>'JobsController@index',
+        'as'=>'jobs'
+    ]);
+    Route::get('/Projects/Completed',[
+        'uses'=>'ProjectsController@completed',
+        'as'=>'projects.completed'
+    ]);
+    Route::get('/Job/Id/{projectId}',[
+        'uses'=>'ProjectsController@show',
+        'as'=>'singleProject'
+    ]);
     Route::post('/Project/Post',[
         'uses'=>'ProjectsController@store',
         'as'=>'project.bpost'
