@@ -46,8 +46,44 @@ Route::group(['middleware' => ['auth']], function () {
         'uses'=>'ProjectsController@show',
         'as'=>'singleProject'
     ]);
+    Route::get('/Suspend/Bids/{slug}',[
+        'uses'=>'ProjectsController@close',
+        'as'=>'close'
+    ]);
+    Route::get('/Complete/Project/{slug}',[
+        'uses'=>'ProjectsController@complete',
+        'as'=>'complete'
+    ]);
+    Route::get('/Submit/Proposal/{projectId}',[
+        'uses'=>'JobsController@Proposal',
+        'as'=>'proposalPost'
+    ]);
+    Route::get('/Job/Views/{projectId}',[
+        'uses'=>'JobsController@show',
+        'as'=>'singleJob'
+    ]);
     Route::post('/Project/Post',[
         'uses'=>'ProjectsController@store',
         'as'=>'project.bpost'
+    ]);
+    Route::post('/Project/Proposal/{Id}',[
+        'uses'=>'ProposalsController@store',
+        'as'=>'proposal.post'
+    ]);
+    Route::get('/Proposed/Jobs',[
+        'uses'=>'ProposalsController@proposed',
+        'as'=>'proposed'
+    ]);
+    Route::get('/Proposal/Retract/{ProjectId}',[
+        'uses'=>'ProposalsController@retract',
+        'as'=>'retract'
+    ]);
+    Route::get('/Message/Project/{ProjectId}/{UserId}',[
+        'uses'=>'MessagesController@index',
+        'as'=>'message'
+    ]);
+    Route::post('/Messages/{UserId}/{ProjectId}',[
+        'uses'=>'MessagesController@store',
+        'as'=>'message.post'
     ]);
 });

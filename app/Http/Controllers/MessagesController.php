@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\{Projects,User,Messages};
+use Session;
+use Auth;
 class MessagesController extends Controller
 {
     /**
@@ -13,7 +15,33 @@ class MessagesController extends Controller
      */
     public function index()
     {
-        //
+        $projectId=request()->ProjectId;
+        $UserId=request()->UserId;
+        $project=Projects::where('ProjectId','=',$projectId)->get()->first();
+        if(is_null($project)){
+            return back();
+        }
+        $user=User::where('UserId','=',$UserId)->get()->first();
+        if(is_null($user)){
+            return back();
+        }
+        $isMessages=Messages::where([
+            ['Project','=',$projectId]
+        ])->get();
+        if(is_null($isMessages)){
+            $messages='None';
+        }else{
+            $messages=$isMessages;
+        }
+        $Messages=Messages::where(
+            'Project','=',$projectId
+        )->get();
+        return view('Messages.Index')
+        ->with('Messages',$Messages)
+        ->with('isMessages',$messages)
+        ->with('user',$user)
+        ->with('project',$project)
+        ;
     }
 
     /**
@@ -34,7 +62,23 @@ class MessagesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $userId=request()->UserId;
+        $projectId=request()->ProjectId;
+        $message=request()->Message;
+        $from=Auth::user()->UserId;
+        Messages::create([
+            'From'=>$from,
+            'To'=>$userId,
+            'Project'=>$projectId,
+            'Message'=>$message,
+            'Attachment'=>'0',
+        ]);
+        $Messages=Messages::where([
+            ['From','=',Auth::user()->UserId],
+            ['To','=',$userId],
+            ['Project','=',$projectId]
+        ])->get();
+        return back()->with('Messages',$Messages);
     }
 
     /**

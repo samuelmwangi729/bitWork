@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Str;
 use Auth;
-use App\Projects;
+use App\{Projects,Proposal};
 use Session;
 
 class ProjectsController extends Controller
@@ -98,7 +98,17 @@ class ProjectsController extends Controller
     public function show($id)
     {
         $project=Projects::where('ProjectId','=',$id)->get()->first();
-        return view('Projects.Single')->with('project',$project);
+        $proposals=Proposal::where('ProjectId','=',$id)->get();
+        if(is_null($proposals)){
+            $pCount=0;
+        }
+        if(!is_null($proposals)){
+            $pCount=$proposals->count();
+        }
+        return view('Projects.Single')
+        ->with('ProposalsCount',$pCount)
+        ->with('proposals',$proposals)
+        ->with('project',$project);
     }
 
     /**
@@ -146,9 +156,36 @@ class ProjectsController extends Controller
         $projects=Projects::where(
             [
                 ['ClientId','=',Auth::user()->UserId],
-                ['Status','=','0']
+                ['Status','=','1']
             ]
         )->get();
        return view('Projects.Completed')->with('projects',$projects);
+    }
+
+    public function close($slug){
+        $project=Projects::where(
+            'slug','=',$slug
+        )->get()->first();
+        if(is_null($project)){
+
+        }else{
+            $project->Status=3;
+            $project->save();
+            Session::flash('success','Project Closed for Bidding');
+            return back();
+        }
+    }
+    public function complete($slug){
+        $project=Projects::where(
+            'slug','=',$slug
+        )->get()->first();
+        if(is_null($project)){
+
+        }else{
+            $project->Status=1;
+            $project->save();
+            Session::flash('success','Project Marked as Complete');
+            return back();
+        }
     }
 }

@@ -20,6 +20,7 @@ class CreateProposalsTable extends Migration
             $table->String('ProposalDescription');
             $table->String('ProjectTimespan');
             $table->String('Budget');
+            $table->String('PaidBy');
             $table->String('Resume');
             $table->integer('Status')->default(0);
             $table->timestamps();

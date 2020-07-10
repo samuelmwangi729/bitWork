@@ -12,7 +12,7 @@
                 <tbody>
                     @foreach ($projects  as  $project )
                     <tr>
-                        <td><a href="{{ route('singleProject',[$project->ProjectId]) }}" style="display:block;color:black">
+                        <td><a href="{{ route('singleJob',[$project->ProjectId]) }}" style="display:block;color:black">
                            <h6 class="text-center" style="text-decoration:underline;color:#f2174f"> {{ $project->ProjectTitle }}  <span class="pull-right"><i class="fa fa-heart" style="color:#f2174f;font-size:25px"></i></span></h6><br>
                             <span style="font-weight:bold">{{ $project->Description }}</span>
                         </a></td>

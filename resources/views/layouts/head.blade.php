@@ -8,6 +8,7 @@
 <title>{{config('app.name')}} {{ Auth::user()->name }} Home</title>
 <link rel="icon" href="{{  asset('img/logo.png')  }}" type="image/x-icon"> <!-- Favicon-->
 <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{asset('assets/plugins/dropify/css/dropify.min.css')}}">
 <link rel="stylesheet" href="{{ asset('assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.css') }}"/>
 <link rel="stylesheet" href="{{ asset('assets/plugins/charts-c3/plugin.css') }}"/>
 <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-select/css/bootstrap-select.css') }}" />

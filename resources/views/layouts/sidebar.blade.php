@@ -26,7 +26,7 @@
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-briefcase"></i><span>Browse Jobs</span></a>
                 <ul class="ml-menu">
                     <li><a href="{{ route('jobs') }}">View Jobs</a></li>
-                    <li><a href="chat.html">Chat Apps</a></li>
+                    <li><a href="{{ route('proposed') }}">My Jobs</a></li>
                     <li><a href="events.html">Calendar</a></li>
                     <li><a href="contact.html">Contact</a></li>                    
                 </ul>

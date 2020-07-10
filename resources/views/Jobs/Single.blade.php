@@ -30,9 +30,12 @@
                                         <p class="vote"><strong>{{ $ProposalsCount }}</strong> Proposal(s)</strong></p>
                                         <div class="action">
                                             @if($project->Status==0)
-                                            <button class="btn btn-info waves-effect" type="button" title="Save For Later" style="background-color:#d77896 !important"><i class="zmdi zmdi-favorite"></i>&nbsp;Save for Later</button>
-                                            <a class="btn btn-info waves-effect"  style="background-color:black;color:white !important" href="{{ route('close',[$project->Slug]) }}"><i class="fa fa-times-circle"></i>&nbsp;Close Bidding</a>
-                                            <a class="btn btn-primary waves-effect" href="{{ route('complete',[$project->Slug]) }}"><i class="fa fa-check"></i>&nbsp;Mark As Complete</a>                                           
+                                              @if($hasProposed)
+                                              <i class="fa fa-check-circle" style="color:green;font-size:20px"></i><span class="text-success"> You already Have Submitted your Proposal For this Project</span>
+                                              @else
+                                              <button class="btn btn-info waves-effect" type="button" title="Save For Later" style="background-color:#f2174f !important"><i class="zmdi zmdi-favorite"></i>&nbsp;Save for Later</button>
+                                              <a href="{{ route('proposalPost',[$project->ProjectId]) }}" class="btn btn-primary waves-effect"><i class="fa fa-edit"></i>&nbsp;Submit Proposal</a>
+                                              @endif
                                             @endif
                                             @if($project->Status==3)
                                             <button class="btn btn-warning waves-effect" type="button"><i class="fa fa-times-circle"></i>&nbsp;Closed For Bidding</button>
@@ -71,10 +74,6 @@
                                                 <h6>UserId : {{$proposal->UserId}} <span class="pull-right"> For Only {{$proposal->Budget}} BTC</span></h6>
                                                 <h2><small class="info">{{$proposal->ProposalDescription}}</small></h2>
                                                 <small>To be Delivered in less then {{$proposal->ProjectTimespan}}</small>
-                                                <div class="pull-right">
-                                                    <a href="{{ route('message',[$proposal->ProjectId,$proposal->UserId]) }}" class="btn" style="background-color:#f2174f;color:white"><i class="fa fa-envelope"></i>&nbsp; Message {{ $proposal->UserId }}</a>
-                                                    <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Award {{ $proposal->UserId }}</a>
-                                                </div>
                                             </div>
                                         </div>
                                         <hr>
@@ -83,7 +82,13 @@
                                 </div>
                                 <div class="tab-pane" id="review">
                                     <p>
-                                        @if($project->ProjectFile ==0 )  No Files Uploaded By The Client @else <a href="{{ asset($project->ProjectFile) }}">View File</a> @endif
+                                        @if($project->ProjectFile) 
+                                            <h6 class="text-center"><a href="{{ asset($project->ProjectFile) }}" target="_blank"><button class="btn btn-primary fa fa-download"> &nbsp;Download</button></a></h6>
+                                        @else
+                                       <div class="alert alert-danger">
+                                           No available files for the Project
+                                       </div>
+                                        @endif
                                     </p>
                                 </div>
                                 <div class="tab-pane" id="rating">
@@ -91,16 +96,9 @@
                                       Projects Rating Goes Here
                                     </p>
                                 </div>
-                                <div class="tab-pane" id="about">
-                                    <div class="body">
-                                        <ul class="list-group">
-                                            <a href="#" style="display:block;text-decoration:none;color:black !important">
-                                                <li class="list-group-item">
-                                                    Sent a Message <span class="pull-right">12:34 AM <i class="fa fa-circle" style="color:red"></i></span>
-                                                </li>
-                                            </a>
-                                        </ul>
-                                    </div>
+                                <div class="tab-pane" id="about" class="justify-content-center">
+                                    Upgrade your Membership to Message the Client Directly
+                                    <a href="#" class="btn" style="background-color:#f2174f !important">0.0005BTC Per Month</a>
                                 </div>
                             </div>
                         </div>
