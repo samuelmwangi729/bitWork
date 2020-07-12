@@ -76,19 +76,38 @@
             <a href="javascript:void(0);" class="dropdown-toggle" title="Messages" data-toggle="dropdown" role="button"><i class="fa fa-envelope"></i>
             </a>
             <ul class="dropdown-menu slideUp2">
-                <li class="header">Messages</li>
+                <li class="header">Sent Messages</li>
+
                 <li class="body">
                     <ul class="menu list-unstyled">
+                        @foreach (App\MessagesSender::where('From','=',Auth::user()->UserId)->get() as  $sentMessage)
                         <li>
-                            <a href="javascript:void(0);">
-                                <div class="icon-circle bg-blue"><i class="zmdi zmdi-account"></i></div>
+                            <a href="{{ route('Tomessage',[$sentMessage->ChatId]) }}">
+                                <div class="icon-circle bg-red"><i class="fa fa-envelope"></i></div>
                                 <div class="menu-info">
-                                    <h4>8 New Members joined</h4>
-                                    <p><i class="zmdi zmdi-time"></i> 14 mins ago </p>
+                                    <h4>{{ $sentMessage->To }}</h4>
+                                    <p><i class="zmdi zmdi-time"></i> {{ ($sentMessage->created_at)->toFormattedDateString() }} </p>
                                 </div>
                             </a>
                         </li>
-
+                            {{-- @foreach (App\Messages::where('From','=',$sentMessage->From)->get()->take(1) as $messages)   
+                            
+                            @endforeach --}}
+                        @endforeach
+                        <li class="header">Received Messages</li>
+                        @foreach (App\MessagesSender::where('To','=',Auth::user()->UserId)->get() as  $toMe)
+                            @foreach (App\Messages::where('ChatId','=',$toMe->ChatId)->get()->take(1) as $messages)
+                                <li>
+                                    <a href="{{ route('messageFrom',[$toMe->ChatId]) }}">
+                                        <div class="icon-circle bg-red"><i class="fa fa-envelope"></i></div>
+                                        <div class="menu-info">
+                                            <h4>{{ $toMe->From }}</h4>
+                                            <p><i class="zmdi zmdi-time"></i> {{ ($toMe->created_at)->toFormattedDateString() }} </p>
+                                        </div>
+                                    </a>
+                                </li>
+                            @endforeach
+                        @endforeach
                     </ul>
                 </li>
                 <li class="footer"> <a href="javascript:void(0);">View All Messages</a> </li>

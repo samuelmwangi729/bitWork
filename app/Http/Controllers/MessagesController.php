@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Projects,User,Messages};
+use App\{Projects,User,Messages,MessagesSender,Proposal};
 use Session;
 use Auth;
+use Str;
 class MessagesController extends Controller
 {
     /**
@@ -13,15 +14,17 @@ class MessagesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $projectId=request()->ProjectId;
-        $UserId=request()->UserId;
+        
+        $to=$request->UserId;
+        $projectId=$request->ProjectId;
         $project=Projects::where('ProjectId','=',$projectId)->get()->first();
         if(is_null($project)){
             return back();
         }
-        $user=User::where('UserId','=',$UserId)->get()->first();
+        $user=User::where('UserId','=',$to)->get()->first();
         if(is_null($user)){
             return back();
         }
@@ -33,10 +36,30 @@ class MessagesController extends Controller
         }else{
             $messages=$isMessages;
         }
-        $Messages=Messages::where(
-            'Project','=',$projectId
+        $Messages=Messages::where([
+            ['Project','=',$projectId],
+            ['To','=',$request->UserId]
+        ]
         )->get();
+        //is there a chat Id?
+        $ChatId=MessagesSender::where([
+            ['From','=',Auth::user()->UserId],
+            ['To','=',$to]
+        ])->get()->first();
+        if(is_null($ChatId)){
+            $chatsId=null;
+            $Messages='None';
+            $inbox='None';
+        }
+        if(!is_null($ChatId)){
+            $chatsId=$ChatId->ChatId;
+            $Messages=Messages::where('ChatId','=',$chatsId)->get();
+            $inbox=MessagesSender::where('ChatId','=',$chatsId)->get();
+        }
         return view('Messages.Index')
+        ->with('ChatId',$chatsId)
+        ->with('to',$to)
+        ->with('inbox',$inbox)
         ->with('Messages',$Messages)
         ->with('isMessages',$messages)
         ->with('user',$user)
@@ -62,22 +85,31 @@ class MessagesController extends Controller
      */
     public function store(Request $request)
     {
-        $userId=request()->UserId;
         $projectId=request()->ProjectId;
         $message=request()->Message;
         $from=Auth::user()->UserId;
+        $ChatId=$request->ChatId;
+        //Register the sender of the message 
+        $isSent=MessagesSender::where('ChatId','=',$ChatId)->get()->first();
+        if(is_null($isSent)){
+            $ChatId=Str::random(8);
+        }
+        if(is_null($isSent)){
+            MessagesSender::create([
+                'To'=>$request->To,
+                'From'=>$from,
+                'ChatId'=>$ChatId,
+            ]);
+        }
         Messages::create([
             'From'=>$from,
-            'To'=>$userId,
+            'To'=>$request->To,
             'Project'=>$projectId,
             'Message'=>$message,
+            'ChatId'=>$ChatId,
             'Attachment'=>'0',
         ]);
-        $Messages=Messages::where([
-            ['From','=',Auth::user()->UserId],
-            ['To','=',$userId],
-            ['Project','=',$projectId]
-        ])->get();
+        $Messages=Messages::where('ChatId','=',$ChatId)->get();
         return back()->with('Messages',$Messages);
     }
 
@@ -124,5 +156,46 @@ class MessagesController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function From(){
+        $ChatId=request()->ChatId;
+        $myMessages=Messages::where('ChatId','=',$ChatId)->get();
+        $projectId=Messages::where('ChatId','=',$ChatId)->get()->first();
+        $from=Messages::where('ChatId','=',$ChatId)->get()->last();
+        $user=User::where('UserId','=',$from->From)->get()->first();
+        $inbox=MessagesSender::where('ChatId','=',$ChatId)->get();
+        //get the project type pay
+        $payType=Proposal::where([
+            ['UserId','=',Auth::user()->UserId],
+            ['ProjectId','=',$projectId->Project]
+        ])->get()->first();
+        if(is_null($payType)){
+            $payment='Project';
+        }else{
+            $payment=$payType->PaidBy;
+        }
+        return view('Messages.From')
+        ->with('payment',$payment)
+        ->with('ChatId',$ChatId)
+        ->with('inbox',$inbox)
+        ->with('from',$user)
+        ->with('projectId',$projectId->Project)
+        ->with('myMessages',$myMessages);
+    }
+    public function Sent(){
+        $ChatId=request()->ChatId;
+        $myMessages=Messages::where('ChatId','=',$ChatId)->get();
+        $projectId=$myMessages[0]->Project;
+        $To=$myMessages[0]->To;
+        $user=User::where('UserId','=',$To)->get()->first();
+        $inbox=MessagesSender::where('ChatId','=',$ChatId)->get();
+        // dd($user);
+        return view('Messages.Sent')
+        ->with('ChatId',$ChatId)
+        ->with('user',$user)
+        ->with('inbox',$inbox)
+        ->with('from',Auth::user()->UserId)
+        ->with('projectId',$projectId)
+        ->with('myMessages',$myMessages);
     }
 }

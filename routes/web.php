@@ -38,6 +38,14 @@ Route::group(['middleware' => ['auth']], function () {
         'uses'=>'JobsController@index',
         'as'=>'jobs'
     ]);
+    Route::get('/Accept/{ChatId}',[
+        'uses'=>'ProjectsController@accept',
+        'as'=>'accept'
+    ]);
+    Route::get('/Reject/{ChatId}',[
+        'uses'=>'ProjectsController@reject',
+        'as'=>'reject'
+    ]);
     Route::get('/Projects/Completed',[
         'uses'=>'ProjectsController@completed',
         'as'=>'projects.completed'
@@ -53,6 +61,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/Complete/Project/{slug}',[
         'uses'=>'ProjectsController@complete',
         'as'=>'complete'
+    ]);
+    Route::get('/Award/Project/{ChatId}',[
+        'uses'=>'ProjectsController@award',
+        'as'=>'award'
     ]);
     Route::get('/Submit/Proposal/{projectId}',[
         'uses'=>'JobsController@Proposal',
@@ -81,6 +93,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/Message/Project/{ProjectId}/{UserId}',[
         'uses'=>'MessagesController@index',
         'as'=>'message'
+    ]);
+    Route::get('/Messages/Projects/{ChatId}',[
+        'uses'=>'MessagesController@From',
+        'as'=>'messageFrom'
+    ]);
+    Route::get('/Messages/Sent/{ChatId}',[
+        'uses'=>'MessagesController@Sent',
+        'as'=>'Tomessage'
     ]);
     Route::post('/Messages/{UserId}/{ProjectId}',[
         'uses'=>'MessagesController@store',

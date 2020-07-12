@@ -7,16 +7,17 @@
             {{Session::get('error')}}
     </div>
     @endif
-    <h3>Submit Your Proposal for the Project <u style="color:red">{{ $project->ProjectTitle }}</u></h3><br>
-    Project Budget: <b>{{ $project->Budget }}</b><br>
+    <h6>Submit Your Proposal for the Project <u style="color:red">{{ $project->ProjectTitle }}</u></h6>
+   <span style="color:red"> Bidding on the Project Requires {{ $project->Bids }} Bid(s)</span><br>
+   <span style="color:red"> Project Budget: <b>{{ $project->Budget }}</b></span><br>
     <form method="POST" action="{{ route('proposal.post',[$project->ProjectId]) }}" enctype="multipart/form-data" id="form">
         @csrf
           <div class="row">
               <!--Start col-->
               <div class="col-sm-6">
                   <div class="form-group">
-                      <label for="Budget" class="label-control">Your Budget</label>
-                      <input type="number" class="form-control  @error('Budget') form-control-danger @enderror" name="Budget" placeholder="eg. 0.5" title="We collect payments in terms of BTC. if you input 5, it will be 5 BTC">
+                      <label for="Budget" class="label-control">Your Budget </label>
+                      <input type="number" class="form-control  @error('Budget') form-control-danger @enderror" name="Budget" placeholder="eg. 0.5">
                       @error('Budget')
                 <span style="color:red">
                     Please Choose your Budget

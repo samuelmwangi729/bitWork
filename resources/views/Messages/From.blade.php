@@ -25,22 +25,18 @@
                         <div class="chat_list">
                             <h2>Latest Chats</h2>
                             <ul class="user_list list-unstyled mb-0 mt-3">
-                                @if($inbox=='None')
-                                No Available Messages
-                                @else
                                 @foreach($inbox as $message)
                                 <li>
                                     {{-- <a href="{{ route('messageFrom',[$projectId,$message->From]) }}"> --}}
-                                        <a href="{{ route('Tomessage',[$ChatId]) }}">
+                                        <a href="#">
                                         <img src="{{ asset('assets/images/xs/avatar1.jpg') }}" alt="avatar" />
                                         <div class="about">
-                                            <div class="name">{{ App\User::where('UserId','=',$message->To)->get()[0]->name }}</div>
+                                            <div class="name">{{ App\User::where('UserId','=',$message->From)->get()[0]->name }}</div>
                                             <div class="status online"> <i class="zmdi zmdi-circle"></i>&nbsp;{{ ($message->created_at)->toFormattedDateString() }} </div>
                                         </div>
                                     </a>
                                 </li>
                                 @endforeach
-                                @endif
                             </ul>
                         </div>
                         <div class="chat_window body">
@@ -48,36 +44,35 @@
                                 <div class="user">
                                     <img src="{{ asset('assets/images/xs/avatar2.jpg') }}" alt="avatar" />
                                     <div class="chat-about">
-                                        <div class="chat-with">{{ $user->name }}</div>
-                                        <div class="chat-num-messages"><small>{{ $project->ProjectTitle }}</small></div>
+                                        {{-- <div class="chat-with"></div> --}}
+                                        <div class="chat-with">{{App\User::where('UserId','=',$message->From)->get()[0]->name }}</div>
+                                        <div class="chat-num-messages"><small>ProjectId:<a href="{{ route('singleProject',[$projectId]) }}">{{ $projectId }}</a></small></div>
                                     </div>
                                 </div>
                                 <div class="setting">
-                                    <a href="{{ route('award',[$ChatId]) }}" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Award Project</a>
+                                    @if($payment=='By Project') 
+                                        <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Paid By Project</a>
+                                    @endif
+                                    @if($payment=='By Milestone') 
+                                        <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Create MileStone</a>
+                                    @endif
+                                    @if($payment=='Paid Hourly') 
+                                    <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp;Track Hours</a>
+                                @endif
+                                    
                                 </div>
                                 <a href="javascript:void(0);" class="list_btn btn btn-info btn-round float-md-right"><i class="zmdi zmdi-comments"></i></a>
                             </div>
                             <hr>
                             <ul class="chat-history">
-                              @if($Messages=='None')
-                              <h6 class="text-center text-success" style="text-transform:lowercase !important">Start A new Conversation with {{ $user->name }} <i class="zmdi zmdi-circle" style="font-size:8px;color:red"></i> <i class="zmdi zmdi-circle" style="font-size:8px;color:blue"></i> <i class="zmdi zmdi-circle" style="font-size:8px"></i></h6>
-                              @else
-                              @foreach($Messages as $message)
+                              @foreach($myMessages as $message)
                              @if($message->From == Auth::user()->UserId)
                                 @if($message->Attachment==3)
-                                    @if($message->From==Auth::user()->UserId)
-                                        <div class="well well-primary well-md text-center" style="background-color:red;color:white">
-                                            We Have sent a request to {{ $to }}. They Have to Accept the Offer
-                                        </div>
-                                    @else
-                                        <div class="card w_data_1">
-                                            <div class="body">
-                                                {{ $message->From }}
-                                            <a href="{{ route('accept',[$project->ProjectId]) }}" class="btn btn-success">Yes</a>
-                                            <a href="{{ route('reject',[$project->ProjectId]) }}" class="btn btn-danger">No</a>
-                                            </div>
-                                        </div>
-                                    @endif
+                                <div class="card w_data_1">
+                                    <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                      Congratulations!!! You Have Accepted {{ $message->To }} Project. You Can Now Start Working<br>
+                                    </div>
+                                </div>
                                 @else
                                 <li class="clearfix">
                                     <div class="status online message-data text-right">
@@ -89,22 +84,43 @@
                                 </li>
                                 @endif
                              @else
+                             @if($message->Attachment==3)
+                             @if($message->From==Auth::user()->UserId)
+                                 <div class="well well-primary well-md text-center" style="background-color:red;color:white">
+                                     We Have sent a request to {{ $to }}. They Have to Accept the Offer
+                                 </div>
+                             @else
+                                 <div class="card w_data_1">
+                                     <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                        @if(Session::has('error'))
+                                    <div class="aler alert-danger">
+                                        <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                        {{ Session::get('error') }}
+                                    </div>
+                                @endif
+                                        {{ $message->From }} Has Offered The Project To You. Do You Accept?<br>
+                                     <a href="{{ route('accept',[$ChatId]) }}" class="btn btn-success">Yes</a>
+                                     <a href="{{ route('reject',[$ChatId]) }}" class="btn btn-danger">No</a>
+                                     </div>
+                                 </div>
+                             @endif
+                         @else
                             <li>
                                 <div class="status message-data">
-                                    <span class="name"><small>{{ $message->To }}</small></span>
+                                    <span class="name"><small>{{ $message->From }}</small></span>
                                     <span class="time"> {{ ($message->created_at)->toFormattedDateString() }}</span>
                                     <i class="zmdi zmdi-circle me" style="color:blue"></i>
                                 </div>
                                 <div class="message my-message">
                                     <p><small>{{ $message->Message }}</small></p>
                                 </div>
-                            </li>   
+                            </li> 
+                            @endif  
                             @endif
-                              @endforeach       
-                              @endif              
+                              @endforeach                     
                             </ul>
                             <div class="chat-box">
-                                <form method="post" action="{{ route('message.post',[$user->UserId,$project->ProjectId]) }}" enctype="multipart/form-data" id="form">
+                                <form method="post" action="{{ route('message.post',[2,3]) }}" enctype="multipart/form-data" id="form">
                                     @csrf
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -119,8 +135,8 @@
                                             "></i></span>
                                         </div>
                                         <input type="hidden" name="ChatId" value="{{ $ChatId }}" required>
-                                        <input type="hidden" name="To" value="{{ $to }}" required>
-                                        <input type="text" class="form-control" placeholder="Type Your Message To {{ $user->name }}" id="message" name="Message" required>
+                                        <input type="hidden" name="To" value="{{ $from->UserId }}" required>
+                                        <input type="text" class="form-control" placeholder="Type Your Message To {{App\User::where('UserId','=',$message->To)->get()[0]->name }}" id="message" name="Message" required>
                                     </div> 
                                 </form>                                                           
                             </div>

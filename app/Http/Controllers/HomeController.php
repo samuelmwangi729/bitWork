@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\MessagesSender;
+use Auth;
 class HomeController extends Controller
 {
     /**
@@ -23,6 +24,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $sent=MessagesSender::where('From','=',Auth::user()->UserId)->get();
+        $toMe=MessagesSender::where('To','=',Auth::user()->UserId)->get();
+        return view('home')
+        ->with('sent',$sent)
+        ->with('toMe',$toMe);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Str;
 use Auth;
-use App\{Projects,Proposal};
+use App\{Projects,Proposal,MessagesSender,Messages};
 use Session;
 
 class ProjectsController extends Controller
@@ -185,6 +185,64 @@ class ProjectsController extends Controller
             $project->Status=1;
             $project->save();
             Session::flash('success','Project Marked as Complete');
+            return back();
+        }
+    }
+
+    protected function award(){
+        $ChatId=request()->ChatId;
+        $isValid=MessagesSender::where('ChatId','=',$ChatId)->get()->first();
+        if(is_null($isValid)){
+            Session::flash('error','Freelancer Is Not Available At The Moment');
+            return back();
+        }else{
+            $project=Messages::where('ChatId','=',$ChatId)->get()->first();
+            $projectId=$project->Project;
+            $freelancer=$project->To;
+            $from=$project->From;
+            Messages::create([
+                'To'=>$freelancer,
+                'From'=>$from,
+                'Project'=>$projectId,
+                'ChatId'=>$ChatId,
+                'Message'=>'You Have Awarded  '.$freelancer.' Your Project. Wait For his response soon',
+                'Attachment'=>'3',
+            ]);
+            return back();
+        }
+
+
+    }
+    protected function accept(){
+        $ChatId=request()->ChatId;
+        // dd($ChatId);
+        $details=Messages::where('ChatId','=',$ChatId)->get()->first();
+        $projectId=$details->Project;
+        $freelancer=$details->To;
+        $clientId=$details->From;
+        $isAwarded=$project=Projects::where([
+            ['ProjectId','=',$projectId],
+            ['AwardedTo','=',$freelancer]
+        ])->get()->first();
+        if(is_null($isAwarded)){
+            $project=Projects::where([
+                ['ProjectId','=',$projectId],
+                ['ClientId','=',$clientId]
+            ])->get()->first();
+            $project->Status=3;
+            $project->AwardedTo=$freelancer;
+            $project->save();
+            Messages::create([
+                'To'=>$clientId,
+                'From'=>$freelancer,
+                'Project'=>$projectId,
+                'ChatId'=>$ChatId,
+                'Message'=>$freelancer.' Has Accepted your Project',
+                'Attachment'=>'3',
+            ]);
+            return back();
+        }else{
+            Session::flash('error','You already Accepted the Project');
             return back();
         }
     }

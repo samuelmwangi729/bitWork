@@ -11,6 +11,7 @@ class Messages extends Model
         'To',
         'Message',
         'Project',
+        'ChatId',
         'Attachment',
     ];
 }

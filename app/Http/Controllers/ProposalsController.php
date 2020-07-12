@@ -179,8 +179,7 @@ class ProposalsController extends Controller
             ['UserId','=',Auth::user()->UserId],
             ['ProjectId','=',$request->ProjectId]
         ])->get()->first();
-        $proposal->Status=1;
-        $proposal->save();
+        $proposal->destroy($proposal->id);
         Session::flash('error','the proposal has been successfully retracted');
         return back();
     }

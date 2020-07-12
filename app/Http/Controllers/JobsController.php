@@ -20,7 +20,10 @@ class JobsController extends Controller
     public function show($id)
     {
         $project=Projects::where('ProjectId','=',$id)->get()->first();
-        $proposals=Proposal::where('ProjectId','=',$id)->get();
+        $proposals=Proposal::where([
+            ['ProjectId','=',$id],
+            ['Status','=','0']
+        ])->get();
         if(is_null($proposals)){
             $pCount=0;
         }
@@ -29,11 +32,9 @@ class JobsController extends Controller
         }
         $hasProposed=Proposal::where([
             ['UserId','=',Auth::user()->UserId],
-            ['ProjectId','=',$id]
+            ['ProjectId','=',$id],
+            ['Status','=',0]
         ])->get()->first();
-        if($hasProposed){
-            $hasProposed='true';
-        }
         return view('Jobs.Single')
         ->with('ProposalsCount',$pCount)
         ->with('proposals',$proposals)
