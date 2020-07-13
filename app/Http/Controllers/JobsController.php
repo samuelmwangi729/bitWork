@@ -12,7 +12,8 @@ class JobsController extends Controller
          //the function returns projects owned by the logged In user
          $projects=Projects::where(
             [
-                ['Status','=','0']
+                ['Status','=','0'],
+                ['ClientId','!=',Auth::user()->UserId]
             ]
         )->get();
        return view('Jobs.Index')->with('projects',$projects);
@@ -68,5 +69,15 @@ class JobsController extends Controller
         ->with('project',$project);
         }
         return view('Jobs.Proposal')->with('project',$project);
+    }
+
+    protected function Contracts(){
+        $projects=Projects::where(
+            [
+                ['Status','=','3'],
+                ['AwardedTo','=',Auth::user()->UserId]
+            ]
+        )->get();
+        return view('Jobs.Contracts')->with('projects',$projects);
     }
 }

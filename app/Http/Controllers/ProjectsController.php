@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Str;
 use Auth;
-use App\{Projects,Proposal,MessagesSender,Messages};
+use App\{Projects,Proposal,MessagesSender,Messages,Milestone,HourTracker,Balance};
 use Session;
 
 class ProjectsController extends Controller
@@ -105,8 +105,14 @@ class ProjectsController extends Controller
         if(!is_null($proposals)){
             $pCount=$proposals->count();
         }
+        $awardedTo=$project->AwardedTo;
+        $payType=Proposal::where([
+            ['ProjectId','=',$id],
+            ['UserId','=',$awardedTo]
+        ])->get()->first();
         return view('Projects.Single')
         ->with('ProposalsCount',$pCount)
+        ->with('payType',$payType)
         ->with('proposals',$proposals)
         ->with('project',$project);
     }
@@ -200,15 +206,26 @@ class ProjectsController extends Controller
             $projectId=$project->Project;
             $freelancer=$project->To;
             $from=$project->From;
-            Messages::create([
-                'To'=>$freelancer,
-                'From'=>$from,
-                'Project'=>$projectId,
-                'ChatId'=>$ChatId,
-                'Message'=>'You Have Awarded  '.$freelancer.' Your Project. Wait For his response soon',
-                'Attachment'=>'3',
-            ]);
-            return back();
+            $isAwarded=Messages::where([
+                ['From','=',$from],
+                ['To','=',$freelancer],
+                ['Attachment','=',3]
+            ])->get()->first();
+            if(is_null($isAwarded)){
+                Messages::create([
+                    'To'=>$freelancer,
+                    'From'=>$from,
+                    'Project'=>$projectId,
+                    'ChatId'=>$ChatId,
+                    'Message'=>'You Have Awarded  '.$freelancer.' Your Project. Kindly Wait For their response soon',
+                    'Attachment'=>'3',
+                ]);
+                return back();
+            }
+            if($isAwarded->Attachment==3){
+                Session::flash('error','Kindlly Let the Freelancer respond. You already  Awarded The Project');
+                return back();
+            }
         }
 
 
@@ -245,5 +262,168 @@ class ProjectsController extends Controller
             Session::flash('error','You already Accepted the Project');
             return back();
         }
+    }
+    protected function Release(){
+        $ChatId=request()->ChatId;
+        $details=Messages::where('ChatId','=',$ChatId)->get()->first();
+        $projectId=$details->Project;
+        $freelancer=$details->To;
+        $clientId=$details->From;
+        //then check if the person releasing the milestone is the owner of the project
+        if($clientId==Auth::user()->UserId){
+            $Release=Milestone::where([
+                ['ProjectId','=',$projectId],
+                ['Status','=','0']
+            ])->get()->first();
+           if(is_null($Release)){
+               Session::flash('error','Seems You already Released the Milestone');
+               return back();
+           }else{
+            $Release->Status=1;
+            $Release->save();
+              //then post the message on release of the milestone 
+            Messages::create([
+                'To'=>$freelancer,
+                'From'=>$clientId,
+                'Project'=>$projectId,
+                'ChatId'=>$ChatId,
+                'Message'=>$clientId.' Has Released your Milestone of  '.$Release->Amount.' BTC. The Amount  Added to Your Account Balance. Keep Working With Us',
+                'Attachment'=>'5',
+            ]);
+            Session::flash('success','Milestone Successfully Released');
+            return back();
+           }
+        }
+
+    }
+    protected function milestone(Request $request){
+        // dd(request()->ProjectId);
+        $isAwarded=Projects::where('ProjectId','=',request()->ProjectId)->get()->first();
+        $Freelancer=$isAwarded->AwardedTo;
+        if($Freelancer==Auth::user()->UserId){
+            //Submit the Milestone
+            $ChatId=MessagesSender::where([
+                ['From','=',$isAwarded->ClientId],
+                ['To','=',$Freelancer]
+            ])->get()->first();
+            Milestone::create([
+                'ProjectId'=>request()->ProjectId,
+                'Name'=>$request->MilestoneName,
+                'Amount'=>$request->MilestoneAmount,
+                'Status'=>0
+            ]);
+            Messages::create([
+                'To'=>$isAwarded->ClientId,
+                'From'=>$Freelancer,
+                'Project'=>request()->ProjectId,
+                'ChatId'=>$ChatId->ChatId,
+                'Message'=>$Freelancer.' Has Created A Milestone Milestone'.Str::upper($request->MilestoneName).' With Amount '.$request->MilestoneAmount.' BTC',
+                'Attachment'=>'4',
+            ]);
+            Session::flash('success','Milestone Successfully Created');
+            return back();
+        }else{
+           Session::flash('error','You have not been awarded to the project');
+           return back();
+        }
+    }
+    public function TrackHours(Request $request){
+       
+        $isAwarded=Projects::where('ProjectId','=',request()->ProjectId)->get()->first();
+        $Freelancer=$isAwarded->AwardedTo;
+        //get the proposal 
+        $proposal=Proposal::where([
+            ['ProjectId','=',request()->ProjectId],
+            ['UserId','=',Auth::user()->UserId]
+        ])->get()->first();
+        dd($proposal);
+        $budget=$proposal->Budget;
+        $totalAmount=$budget*$request->HoursWorked;
+        //post the hours to the database
+        HourTracker::create([
+            'ProjectId'=>request()->ProjectId,
+            'Hours'=>$request->HoursWorked,
+            'Amount'=>$totalAmount
+        ]);
+        if($Freelancer==Auth::user()->UserId){
+            //Submit the Milestone
+            $ChatId=MessagesSender::where([
+                ['From','=',$isAwarded->ClientId],
+                ['To','=',$Freelancer]
+            ])->get()->first();
+            //Get the Hours Posted
+            Messages::create([
+                'To'=>$isAwarded->ClientId,
+                'From'=>$Freelancer,
+                'Project'=>request()->ProjectId,
+                'ChatId'=>$ChatId->ChatId,
+                'Message'=>$Freelancer.' Has Added '.$request->HoursWorked.'  of Work for your Project. Total  Amount For the Hours is  '.$totalAmount.' BTC',
+                'Attachment'=>'6',
+            ]);
+            Session::flash('success','Hours Successfully Added');
+            return back();
+        }else{
+           Session::flash('error','You have not been awarded to the project');
+           return back();
+        }
+    }
+    protected function track(){
+        $projectId=request()->ProjectId;
+        $isExist=Projects::where('ProjectId','=',$projectId)->get();
+        if(is_null($isExist)){
+            Session::flash('error','Project Not Available');
+            return back();
+        }
+        $projectOwner=$isExist[0]->ClientId;
+       //get the hours tracked
+       $hours=HourTracker::where('ProjectId','=',$projectId)->get();
+      return view('Projects.Hours')
+      ->with('owner',$projectOwner)
+      ->with('hours',$hours);
+    }
+    protected function approve(){
+        $projectId=request()->ProjectId;
+        $isExist=HourTracker::where([
+            ['ProjectId','=',$projectId],
+            ['Status','=',0]
+        ])->get()->first();
+        if(is_null($isExist)){
+            Session::flash('error','Unknown Error Occurred');
+            return back();
+        }
+        $Project=Projects::where('ProjectId','=',$projectId)->get()->first();
+        $UserBalance=Balance::where('UserId','=',$Project->AwardedTo)->get()->first();
+        $newBalance=$UserBalance->Balance + $isExist->Amount;
+        $UserBalance->Balance=$newBalance;
+        $UserBalance->Save();
+        $isExist->Status=1;
+        $isExist->save();
+        Session::flash('success','Hours Successfully Approved');
+        return back();
+    }
+    protected function reject(){
+        $projectId=request()->ProjectId;
+        $Project=Projects::where('ProjectId','=',$projectId)->get()->first();
+        $UserBalance=Balance::where('UserId','=',$Project->AwardedTo)->get()->first();
+        $isExist=HourTracker::where([
+            ['ProjectId','=',$projectId],
+            ['Status','=',1]
+        ])->get()->first();
+        if(is_null($isExist)){
+            Session::flash('error','Unknown Error Occurred');
+            return back();
+        }
+        $newBalance=$UserBalance->Balance - $isExist->Amount;
+        if($newBalance<0){
+            Session::flash('error','Amount Can not be Reversed');
+            return back();
+        }else{
+            $UserBalance->Balance=$newBalance;
+            // $UserBalance->Save();
+            $isExist->Status=0;
+            $isExist->save();
+        }
+        Session::flash('error','Hours Rejected');
+        return back();
     }
 }

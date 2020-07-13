@@ -2,7 +2,7 @@
 <aside id="leftsidebar" class="sidebar">
     <div class="navbar-brand">
         <button class="btn-menu ls-toggle-btn" type="button"><i class="zmdi zmdi-menu"></i></button>
-        <a href="index.html"><img src="{{ asset('img/logo.png') }}" alt="{{config('app.name')}}"></a>
+        <a href="/Dashboard/Index"><img src="{{ asset('img/logo.png') }}" alt="{{config('app.name')}}"></a>
     </div>
     <div class="menu">
         <ul class="list">
@@ -27,8 +27,7 @@
                 <ul class="ml-menu">
                     <li><a href="{{ route('jobs') }}">View Jobs</a></li>
                     <li><a href="{{ route('proposed') }}">My Jobs</a></li>
-                    <li><a href="events.html">Calendar</a></li>
-                    <li><a href="contact.html">Contact</a></li>                    
+                    <li><a href="{{ route('running') }}">Running Jobs</a></li>                
                 </ul>
             </li>  
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-credit-card"></i><span>Payments</span></a>

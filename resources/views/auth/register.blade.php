@@ -68,9 +68,9 @@
                         <label for="names" class="label-control text-center" style="color:#f2174f">
                             <i class="fa fa-user"></i>&nbsp; Account Type
                         </label>
-                        <select class="form-control text-center" style="width:100%" name="AccountType">
+                        <select class="form-control text-center"  name="AccountType">
                             <option label="Choose Your Account Type"></option>
-                            <option value="Freelancer">I AM A Freelancer</option>
+                            <option value="Freelancer">I Am A Freelancer</option>
                             <option value="Client">Looking For A Freelancer</option>
                         </select>
                     </div>

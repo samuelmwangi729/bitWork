@@ -42,6 +42,14 @@ Route::group(['middleware' => ['auth']], function () {
         'uses'=>'ProjectsController@accept',
         'as'=>'accept'
     ]);
+    Route::get('/Milestone/Release/{ChatId}',[
+        'uses'=>'ProjectsController@Release',
+        'as'=>'release'
+    ]);
+    Route::get('/Running/Contracts',[
+        'uses'=>'JobsController@Contracts',
+        'as'=>'running'
+    ]);
     Route::get('/Reject/{ChatId}',[
         'uses'=>'ProjectsController@reject',
         'as'=>'reject'
@@ -62,6 +70,18 @@ Route::group(['middleware' => ['auth']], function () {
         'uses'=>'ProjectsController@complete',
         'as'=>'complete'
     ]);
+    Route::post('/Milestone/Create/{ProjectId}',[
+        'uses'=>'ProjectsController@milestone',
+        'as'=>'milestone'
+    ]);
+    Route::post('/Hours/Track/{ProjectId}',[
+        'uses'=>'ProjectsController@TrackHours',
+        'as'=>'hours'
+    ]);
+    Route::get('/Project/Hours/{ProjectId}',[
+        'uses'=>'ProjectsController@track',
+        'as'=>'project.hours'
+    ]);
     Route::get('/Award/Project/{ChatId}',[
         'uses'=>'ProjectsController@award',
         'as'=>'award'
@@ -77,6 +97,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/Project/Post',[
         'uses'=>'ProjectsController@store',
         'as'=>'project.bpost'
+    ]);
+    Route::post('/Approve/Project/{ProjectId}',[
+        'uses'=>'ProjectsController@approve',
+        'as'=>'approve'
+    ]);
+    Route::post('/Reject/Project/{ProjectId}',[
+        'uses'=>'ProjectsController@reject',
+        'as'=>'reject'
     ]);
     Route::post('/Project/Proposal/{Id}',[
         'uses'=>'ProposalsController@store',

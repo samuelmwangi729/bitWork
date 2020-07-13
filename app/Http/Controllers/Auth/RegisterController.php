@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Str;
+use App\{Accounts,Balance};
 class RegisterController extends Controller
 {
     /*
@@ -71,9 +72,18 @@ class RegisterController extends Controller
         }else{
             $AccountType=0;
         }
+        $userId='Bq'.Str::random(10);
+        Accounts::create([
+            'UserId'=>$userId,
+        ]);
+        Balance::create([
+            'UserId'=>$userId,
+            'Balance'=>'0',
+            'Status'=>0,
+        ]);
         return User::create([
             'name' => $data['name'],
-            'UserId'=>'Bq'.Str::random(10),
+            'UserId'=>$userId,
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'AccountType'=>$AccountType

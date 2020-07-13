@@ -49,15 +49,117 @@
                                         <div class="chat-num-messages"><small>ProjectId:<a href="{{ route('singleProject',[$projectId]) }}">{{ $projectId }}</a></small></div>
                                     </div>
                                 </div>
-                                <div class="setting">
                                     @if($payment=='By Project') 
                                         <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Paid By Project</a>
                                     @endif
                                     @if($payment=='By Milestone') 
-                                        <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Create MileStone</a>
+                                        <button  data-toggle="modal" data-target="#smallModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Create Milestone</button>
+                                        <!--Modal Start-->
+                                        <div class="modal fade modal-col-pink" id="smallModal" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog modal-md" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h4 class="title" id="smallModalLabel">Create Milestone for ProjectId  <u style="color:red">{{ $projectId }}</u></h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form">
+                                                            <form method="POST" action="{{ route('milestone',[$projectId]) }}" id="milestone">
+                                                                @csrf
+                                                                <div class="row">
+                                                                    <div class="col-sm-6">
+                                                                        <div class="form-group">
+                                                                            <label class="label-control" for="MilestoneName"><i class="fa fa-tags"></i>&nbsp; MileStone Name</label>
+                                                                            <input type="text" name="MilestoneName" id="MilestoneName" class="form-control" placeholder="Eg. Upfront Payment" required>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-6">
+                                                                        <div class="form-group">
+                                                                            <label class="label-control" for="MilestoneName"><i class="fa fa-bitcoin"></i>&nbsp; MileStone Amount</label>
+                                                                            <input number="text" name="MilestoneAmount" id="MilestoneAmount" class="form-control" placeholder="Eg. 0.003" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row justify-content-center">
+                                                                    <script>
+                                                                       function v(){
+                                                                         let g=document.getElementById('MilestoneName');
+                                                                         let a=document.getElementById('MilestoneAmount');
+                                                                         let f=document.getElementById('milestone');
+                                                                         if(g.value=='' || a.value==''){
+                                                                             alert('please Fill in the details');
+                                                                             return false;
+                                                                         }else{
+                                                                             f.submit()
+                                                                         }
+                                                                       }
+                                                                    </script>
+                                                                    <button type="submit" class="btn" style="background-color:#f2174f;color:white !important" onclick="
+                                                                        v()
+                                                                        ">
+                                                                        Submit MileStone
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal" style="background-color:#f2174f">Dismiss</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--End Modal-->
                                     @endif
-                                    @if($payment=='Paid Hourly') 
-                                    <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp;Track Hours</a>
+                                    @if($payment=='Hourly') 
+                                    <button  data-toggle="modal" data-target="#hoursModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Track Hours</button>
+                                    <!--Modal Start-->
+                                    <div class="modal fade modal-col-pink" id="hoursModal" tabindex="-1" role="dialog">
+                                        <div class="modal-dialog modal-md" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="title" id="smallModalLabel">Track Hours for ProjectId  <u style="color:red">{{ $projectId }}</u></h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="form">
+                                                        <form method="POST" action="{{ route('hours',[$projectId]) }}" id="hours">
+                                                            @csrf
+                                                            <div class="row">
+                                                                <div class="col-sm-12">
+                                                                    <div class="form-group">
+                                                                        <label class="label-control" for="MilestoneName"><i class="fa fa-tags"></i>&nbsp; Hours Worked</label>
+                                                                        <input type="number" name="HoursWorked" id="HoursWorked" class="form-control" placeholder="Eg. 2" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row justify-content-center">
+                                                                <script>
+                                                                   function v(){
+                                                                     let g=document.getElementById('HoursWorked');
+                                                                     let f=document.getElementById('hours');
+                                                                     if(g.value==''){
+                                                                         alert('please Fill in the details');
+                                                                         return false;
+                                                                     }else{
+                                                                         f.submit()
+                                                                     }
+                                                                   }
+                                                                </script>
+                                                                <button type="submit" class="btn" style="background-color:#f2174f;color:white !important" onclick="
+                                                                    v()
+                                                                    ">
+                                                                    Submit Hours
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal" style="background-color:#f2174f">Dismiss</button>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <!--End Modal-->
+                                           
                                 @endif
                                     
                                 </div>
@@ -67,22 +169,52 @@
                             <ul class="chat-history">
                               @foreach($myMessages as $message)
                              @if($message->From == Auth::user()->UserId)
-                                @if($message->Attachment==3)
-                                <div class="card w_data_1">
-                                    <div class="body" style="border:2px solid red; background-color:whitesmoke">
-                                      Congratulations!!! You Have Accepted {{ $message->To }} Project. You Can Now Start Working<br>
-                                    </div>
-                                </div>
-                                @else
-                                <li class="clearfix">
-                                    <div class="status online message-data text-right">
-                                        <span class="time">{{ ($message->created_at) }}</span>
-                                        <span class="name"><small>{{ Auth::user()->name }}</small></span>
-                                        <i class="zmdi zmdi-circle me" style="color:red"></i>
-                                    </div>
-                                    <div class="message other-message @if(Auth::user()->UserId == $message->To) pull-right @else my-message @endif"><small>{{ $message->Message }}</small></div>
-                                </li>
-                                @endif
+                                        @if($message->Attachment==3)
+                                        <div class="card w_data_1">
+                                            <div class="body" style="border:2px solid red; background-color:whitesmoke;height:200px">
+                                                <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
+                                                <span class="pull-right" style="font-weight:bold;"> Congratulations!!! You Have Accepted  {{  $message->To }} Project. You Can Now Start Working</span>
+                                            </div>
+                                        </div>
+                                        @elseif($message->Attachment==4)
+                                                @if($message->From==Auth::user()->UserId)
+                                                <div class="card w_data_1">
+                                                    <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                                        You Created MileStone For the Project {{ $projectId }}
+                                                       <br>
+                                                    </div>
+                                                </div>
+                                                @else
+                                                    <div class="card w_data_1">
+                                                        <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                                            {{ $message->Message }}Release Now?<br>
+                                                            <a href="{{ route('release',[$ChatId]) }}" class="btn btn-success">Release</a>
+                                                            <a href="{{ route('reject',[$ChatId]) }}" class="btn" style="background-color:black">Dismiss</a>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                        @elseif($message->Attachment==5)
+                                            <div class="card w_data_1">
+                                                <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                                        {{ $message->Message }}
+                                                </div>
+                                            </div>
+                                            @elseif($message->Attachment==6)
+                                            <div class="card w_data_1">
+                                                <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                                     You have Successfully Added Your Hours of Work To This Project. Click <a href="{{ route('project.hours',[$projectId]) }}">Here</a>  to View Them
+                                                </div>
+                                            </div>
+                                        @else
+                                        <li class="clearfix">
+                                            <div class="status online message-data text-right">
+                                                <span class="time">{{ ($message->created_at) }}</span>
+                                                <span class="name"><small>{{ Auth::user()->name }}</small></span>
+                                                <i class="zmdi zmdi-circle me" style="color:red"></i>
+                                            </div>
+                                            <div class="message other-message @if(Auth::user()->UserId == $message->To) pull-right @else my-message @endif"><small>{{ $message->Message }}</small></div>
+                                        </li>
+                                        @endif
                              @else
                              @if($message->Attachment==3)
                              @if($message->From==Auth::user()->UserId)
@@ -93,10 +225,10 @@
                                  <div class="card w_data_1">
                                      <div class="body" style="border:2px solid red; background-color:whitesmoke">
                                         @if(Session::has('error'))
-                                    <div class="aler alert-danger">
-                                        <a href="#" class="close" data-dismiss="alert">&times;</a>
-                                        {{ Session::get('error') }}
-                                    </div>
+                                        <div class="alert alert-danger">
+                                            <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                            <strong>Sorry!!</strong> {{ Session::get('error') }}.
+                                        </div>
                                 @endif
                                         {{ $message->From }} Has Offered The Project To You. Do You Accept?<br>
                                      <a href="{{ route('accept',[$ChatId]) }}" class="btn btn-success">Yes</a>
@@ -105,16 +237,24 @@
                                  </div>
                              @endif
                          @else
-                            <li>
-                                <div class="status message-data">
-                                    <span class="name"><small>{{ $message->From }}</small></span>
-                                    <span class="time"> {{ ($message->created_at)->toFormattedDateString() }}</span>
-                                    <i class="zmdi zmdi-circle me" style="color:blue"></i>
-                                </div>
-                                <div class="message my-message">
-                                    <p><small>{{ $message->Message }}</small></p>
-                                </div>
-                            </li> 
+                            @if($message->Attachment==5)
+                            <br>
+                            <div class="body" style="border:2px solid red; background-color:whitesmoke;height:200px">
+                                <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
+                                <span class="pull-right">{{ $message->Message }} </span>
+                            </div>
+                            @else
+                                <li>
+                                    <div class="status message-data">
+                                        <span class="name"><small>{{ $message->From }}</small></span>
+                                        <span class="time"> {{ ($message->created_at)->toFormattedDateString() }}</span>
+                                        <i class="zmdi zmdi-circle me" style="color:blue"></i>
+                                    </div>
+                                    <div class="message my-message">
+                                        <p><small>{{ $message->Message }}</small></p>
+                                    </div>
+                                </li> 
+                                @endif
                             @endif  
                             @endif
                               @endforeach                     

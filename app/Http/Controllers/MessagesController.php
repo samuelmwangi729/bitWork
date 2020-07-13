@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{Projects,User,Messages,MessagesSender,Proposal};
+use App\{Projects,User,Messages,MessagesSender,Proposal,Milestone};
 use Session;
 use Auth;
 use Str;
@@ -174,7 +174,10 @@ class MessagesController extends Controller
         }else{
             $payment=$payType->PaidBy;
         }
+        //check if there is any milestone 
+        $Milestone=Milestone::where('ProjectId','=',$projectId->Project)->get();
         return view('Messages.From')
+        ->with('Milestone',$Milestone)
         ->with('payment',$payment)
         ->with('ChatId',$ChatId)
         ->with('inbox',$inbox)

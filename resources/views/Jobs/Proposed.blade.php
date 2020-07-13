@@ -18,16 +18,14 @@
             <table class="table table-bordered table-striped table-hover dataTable js-exportable">
                 <thead>
                     <tr>
-                        <th>ProjectId</th>
-                        <th>Project Title</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @for($i=0;$i<count($projects);$i++)
                     @foreach ($projects[$i]  as  $project )
                     <tr>
-                        <td><a href="{{ route('singleJob',[$project->ProjectId]) }}" style="display:block;color:black">{{ $project->ProjectId }}</a></td>
-                        <td><a href="{{ route('singleJob',[$project->ProjectId]) }}" style="display:block;color:black">{{ $project->ProjectTitle }}</a> <span class="pull-right"><a href="{{ route('retract',[$project->ProjectId]) }}"><div class="badge badge-info">Retract Proposal</div></a></span></td>
+                        <td><a href="{{ route('singleJob',[$project->ProjectId]) }}" style="display:block;color:black">{{ $project->ProjectTitle }}<br>{{ $project->Description }}</a> <span class="pull-right"><a href="{{ route('retract',[$project->ProjectId]) }}"><div class="badge badge-warning">Retract Proposal</div></a></span></td>
                     </tr>
                     @endforeach
                     @endfor

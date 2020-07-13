@@ -19,6 +19,16 @@
             </div>
         </div>
         <div class="container-fluid">
+            @if(Session::has('error'))
+            <div class="alert alert-danger">
+                <strong>Error!!</strong> {{ Session::get('error') }}.
+            </div>
+            @endif
+            @if(Session::has('success'))
+            <div class="alert alert-success">
+                <strong>Success!!</strong> {{ Session::get('success') }}.
+            </div>
+            @endif
             <div class="row clearfix">
                 <div class="col-lg-12">
                     <div class="card">
@@ -56,45 +66,72 @@
                             </div>
                             <hr>
                             <ul class="chat-history">
-                              @foreach($myMessages as $message)
-                             @if($message->From == Auth::user()->UserId)
-                             <li class="clearfix">
-                                <div class="status online message-data text-right">
-                                    <span class="time">{{ ($message->created_at) }}</span>
-                                    <span class="name"><small>{{ Auth::user()->name }}</small></span>
-                                    <i class="zmdi zmdi-circle me" style="color:red"></i>
-                                </div>
-                                <div class="message other-message @if(Auth::user()->UserId == $message->To) pull-right @else my-message @endif"><small>{{ $message->Message }}</small></div>
-                            </li>
-                             @else
-                                @if($message->Attachment==3)
-                                    @if($message->From==Auth::user()->UserId)
-                                        <div class="well well-primary well-md text-center" style="background-color:red;color:white">
-                                            We Have sent a request to {{ $to }}. They Have to Accept the Offer
-                                        </div>
-                                    @else
-                                        <div class="card w_data_1">
-                                            <div class="body">
-                                            {{ $message->From }}
-                                            <a href="{{ route('accept',[$projectId]) }}" class="btn btn-success">Yes</a>
-                                            <a href="{{ route('reject',[$projectId]) }}" class="btn btn-danger">No</a>
+                                @foreach($myMessages as $message)
+                                    @if($message->From == Auth::user()->UserId)
+                                            @if($message->Attachment==5)
+                                            <br>
+                                            <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                                <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
+                                                <span class="pull-right" style="font-weight:bold;padding-top:20px">You Have Released the Milestone for {{ $message->To }}</span>
                                             </div>
-                                        </div>
+                                            @else
+                                            <li class="clearfix">
+                                                <div class="status online message-data text-right">
+                                                    <span class="time">{{ ($message->created_at) }}</span>
+                                                    <span class="name"><small>{{ Auth::user()->name }}</small></span>
+                                                    <i class="zmdi zmdi-circle me" style="color:red"></i>
+                                                </div>
+                                                <div class="message other-message @if(Auth::user()->UserId == $message->To) pull-right @else my-message @endif"><small>{{ $message->Message }}</small></div>
+                                            </li>
+                                            @endif
+                                    @else
+                                        @if($message->Attachment==3)
+                                                @if($message->From==Auth::user()->UserId)
+                                                    <div class="well well-primary well-md text-center" style="background-color:red;color:white">
+                                                        We Have sent a request to {{ $to }}. They Have to Accept the Offer
+                                                    </div>
+                                                @else
+                                                <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                                    <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
+                                                    <span class="pull-right" style="font-weight:bold;padding-top:20px"> {{ $message->Message }}</span>
+                                                </div>
+                                                @endif
+                                                @elseif($message->Attachment==4)
+                                                <br>
+                                                <div class="card w_data_1">
+                                                    <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                                         {{ $message->Message }}Release Now?<br>
+                                                        <a href="{{ route('release',[$ChatId]) }}" class="btn btn-success">Release</a>
+                                                        <a href="{{ route('reject',[$ChatId]) }}" class="btn" style="background-color:black">Dismiss</a>
+                                                    </div>
+                                                </div>
+                                            @elseif($message->Attachment==5)
+                                                <div class="card w_data_1">
+                                                    <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                                            {{ $message}}
+                                                    </div>
+                                                </div>
+                                            @elseif($message->Attachment==6)
+                                            <br>
+                                                <div class="card w_data_1">
+                                                    <div class="body" style="border:2px solid red; background-color:whitesmoke">
+                                                            {{ $message->Message}}. &nbsp;Click <a href="{{ route('project.hours',[$projectId]) }}">Here</a>  to View Them
+                                                    </div>
+                                                </div>
+                                        @else
+                                            <li>
+                                                <div class="status message-data">
+                                                    <span class="name"><small>{{ $message->To }}</small></span>
+                                                    <span class="time"> {{ ($message->created_at)->toFormattedDateString() }}</span>
+                                                    <i class="zmdi zmdi-circle me" style="color:blue"></i>
+                                                </div>
+                                                <div class="message my-message">
+                                                    <p><small>{{ $message->Message }}</small></p>
+                                                </div>
+                                            </li>   
+                                        @endif
                                     @endif
-                                @else
-                                    <li>
-                                        <div class="status message-data">
-                                            <span class="name"><small>{{ $message->To }}</small></span>
-                                            <span class="time"> {{ ($message->created_at)->toFormattedDateString() }}</span>
-                                            <i class="zmdi zmdi-circle me" style="color:blue"></i>
-                                        </div>
-                                        <div class="message my-message">
-                                            <p><small>{{ $message->Message }}</small></p>
-                                        </div>
-                                    </li>   
-                                @endif
-                            @endif
-                              @endforeach                     
+                                @endforeach                     
                             </ul>
                             <div class="chat-box">
                                 <form method="post" action="{{ route('message.post',[2,3]) }}" enctype="multipart/form-data" id="form">

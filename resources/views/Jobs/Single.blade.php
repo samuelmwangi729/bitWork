@@ -63,6 +63,8 @@
                             </ul>
                         </div>
                     </div>
+                    @if($project->Status==3)
+                    @else
                     <div class="card">
                         <div class="body">                            
                             <div class="tab-content">
@@ -103,6 +105,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

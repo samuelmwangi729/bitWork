@@ -53,7 +53,11 @@
                                     </div>
                                 </div>
                                 <div class="setting">
-                                    <a href="{{ route('award',[$ChatId]) }}" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Award Project</a>
+                                  @if($ChatId=='')
+                                        <button class="btn btn-success">Enjoy</button>
+                                  @else
+                                  <a href="{{ route('award',[$ChatId]) }}" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Award Project</a>
+                                  @endif
                                 </div>
                                 <a href="javascript:void(0);" class="list_btn btn btn-info btn-round float-md-right"><i class="zmdi zmdi-comments"></i></a>
                             </div>
@@ -96,7 +100,7 @@
                                     <i class="zmdi zmdi-circle me" style="color:blue"></i>
                                 </div>
                                 <div class="message my-message">
-                                    <p><small>{{ $message->Message }}</small></p>
+                                    <p><small>{{ $message->Message }} </small></p>
                                 </div>
                             </li>   
                             @endif
