@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\MessagesSender;
+use App\{MessagesSender,Projects,Balance,Messages,Proposal};
 use Auth;
 class HomeController extends Controller
 {
@@ -24,9 +24,21 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $Proposals=Proposal::where('UserId','=',Auth::user()->UserId)->get()->count();
+        // dd($Proposals);
+        $Earning=Balance::where('UserId','=',Auth::user()->UserId)->get()->first()->Balance;
+        // dd($Earning->Balance);
+        $Messages=Messages::where('To','=',Auth::user()->UserId)->get()->count();
+        // dd($Messages);
+        $Contracts=Projects::where('AwardedTo','=',Auth::user()->UserId)->get()->count();
+        // dd($Contracts);
         $sent=MessagesSender::where('From','=',Auth::user()->UserId)->get();
         $toMe=MessagesSender::where('To','=',Auth::user()->UserId)->get();
         return view('home')
+        ->with('proposals',$Proposals)
+        ->with('earning',$Earning)
+        ->with('messages',$Messages)
+        ->with('contracts',$Contracts)
         ->with('sent',$sent)
         ->with('toMe',$toMe);
     }

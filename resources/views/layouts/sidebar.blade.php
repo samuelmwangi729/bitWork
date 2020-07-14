@@ -32,10 +32,10 @@
             </li>  
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-credit-card"></i><span>Payments</span></a>
                 <ul class="ml-menu">
-                    <li><a href="mail-inbox.html">Email</a></li>
-                    <li><a href="chat.html">Chat Apps</a></li>
-                    <li><a href="events.html">Calendar</a></li>
-                    <li><a href="contact.html">Contact</a></li>                    
+                    <li><a href="{{ route('statement') }}">Payments Statement</a></li>
+                    <li><a href="{{ route('withdraw') }}">Withdraw Earnings</a></li>                    
+                    <li><a href="contact.html">Letter of Earning</a></li>                    
+                    <li><a href="contact.html">Print Statement</a></li>                    
                 </ul>
             </li>    
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-cog"></i><span>Settings</span></a>

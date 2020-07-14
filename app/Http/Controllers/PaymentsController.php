@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Auth;
+use Session;
+use App\{Payment,Accounts};
 class PaymentsController extends Controller
 {
     /**
@@ -13,7 +15,20 @@ class PaymentsController extends Controller
      */
     public function index()
     {
-        //
+        $statements=payment::where('Freelancer','=',Auth::user()->UserId)->get();
+        $statementCount=$statements->count();
+        return view('Payments.Index')
+        ->with('counts',$statementCount)
+        ->with('statements',$statements);
+    }
+
+    protected function withdraw(){
+        //check if the withdrawal Address Is Available
+        $user=Accounts::where('UserId','=',Auth::user()->UserId)->get()->first();
+        if(is_null($user->paymentAddress)){
+            Session::flash('error','No Payment Address Available, Please Update It Under Accounts');
+            return back();
+        }
     }
 
     /**

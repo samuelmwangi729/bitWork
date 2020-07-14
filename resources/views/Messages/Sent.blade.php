@@ -60,7 +60,16 @@
                                     </div>
                                 </div>
                                 <div class="setting">
-                                    <a href="{{ route('award',[$ChatId]) }}" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Award Project</a>
+                                   @if(is_null($project->AwardedTo))
+                                            <a href="{{ route('award',[$ChatId]) }}" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Award Project</a>
+                                   @else
+                                            @if($project->Status==1)
+                                                <button class="btn btn-success fa fa-check">&nbsp;Project Complete</button>
+                                            @else
+                                                <a href="{{ route('completeContract',[$ChatId]) }}" class="btn btn-success"><i class="fa fa-check-circle"></i>&nbsp; Complete Project</a>
+                                                <a href="{{ route('terminateContract',[$ChatId]) }}" class="btn btn-danger"><i class="fa fa-times-circle"></i>&nbsp; Cancel Contract</a>
+                                            @endif
+                                   @endif
                                 </div>
                                 <a href="javascript:void(0);" class="list_btn btn btn-info btn-round float-md-right"><i class="zmdi zmdi-comments"></i></a>
                             </div>
@@ -70,10 +79,22 @@
                                     @if($message->From == Auth::user()->UserId)
                                             @if($message->Attachment==5)
                                             <br>
-                                            <div class="body" style="border:2px solid red; background-color:whitesmoke">
-                                                <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
-                                                <span class="pull-right" style="font-weight:bold;padding-top:20px">You Have Released the Milestone for {{ $message->To }}</span>
+                                            <div class="body" style="border:2px solid red; background-color:whitesmoke;height:150px">
+                                                <span class="ti-receipt" style="font-size:20px;color:blue;font-weight:bold !important">&nbsp;You Have Released the Milestone for {{ $message->To }}</span>
                                             </div>
+                                            @elseif($message->Attachment==7)
+                                            <br>
+                                            <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                                You Requested Project  {{ $projectId }} To Be Complete. Kindly Let {{ $message->To }} To Confirm<br>
+                                           </div>
+                                           @elseif($message->Attachment==8)
+                                                <br>
+                                                <div class="card w_data_1">
+                                                    <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                                        {{ $message->Message }}.<br>
+                                                        Want to leave  review on the Freelancer? Do it <a class="btn btn-warning" href="#">Here</a>
+                                                    </div>
+                                                </div>
                                             @else
                                             <li class="clearfix">
                                                 <div class="status online message-data text-right">
@@ -91,9 +112,8 @@
                                                         We Have sent a request to {{ $to }}. They Have to Accept the Offer
                                                     </div>
                                                 @else
-                                                <div class="body" style="border:2px solid red; background-color:whitesmoke">
-                                                    <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
-                                                    <span class="pull-right" style="font-weight:bold;padding-top:20px"> {{ $message->Message }}</span>
+                                                <div class="body" style="border:2px solid red; background-color:whitesmoke;height:100px">
+                                                    <span class="ti-receipt" style="font-size:20px;color:blue;font-weight:bold !important">&nbsp;{{ $message->Message }}</span>
                                                 </div>
                                                 @endif
                                                 @elseif($message->Attachment==4)

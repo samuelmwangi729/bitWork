@@ -164,6 +164,7 @@ class MessagesController extends Controller
         $from=Messages::where('ChatId','=',$ChatId)->get()->last();
         $user=User::where('UserId','=',$from->From)->get()->first();
         $inbox=MessagesSender::where('ChatId','=',$ChatId)->get();
+        $project=Projects::where('ProjectId','=',$projectId->Project)->get()->first();
         //get the project type pay
         $payType=Proposal::where([
             ['UserId','=',Auth::user()->UserId],
@@ -177,6 +178,7 @@ class MessagesController extends Controller
         //check if there is any milestone 
         $Milestone=Milestone::where('ProjectId','=',$projectId->Project)->get();
         return view('Messages.From')
+        ->with('project',$project)
         ->with('Milestone',$Milestone)
         ->with('payment',$payment)
         ->with('ChatId',$ChatId)
@@ -193,7 +195,9 @@ class MessagesController extends Controller
         $user=User::where('UserId','=',$To)->get()->first();
         $inbox=MessagesSender::where('ChatId','=',$ChatId)->get();
         // dd($user);
+        $project=Projects::where('ProjectId','=',$projectId)->get()->first();
         return view('Messages.Sent')
+        ->with('project',$project)
         ->with('ChatId',$ChatId)
         ->with('user',$user)
         ->with('inbox',$inbox)

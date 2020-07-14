@@ -86,6 +86,22 @@ Route::group(['middleware' => ['auth']], function () {
         'uses'=>'ProjectsController@award',
         'as'=>'award'
     ]);
+    Route::get('/Complete/Contract/{ChatId}',[
+        'uses'=>'ProjectsController@completeContract',
+        'as'=>'completeContract'
+    ]);
+    Route::get('/Contract/Complete/{ProjectId}/{ChatId}',[
+        'uses'=>'ProjectsController@AgreeContract',
+        'as'=>'AgreeComplete'
+    ]);
+    Route::get('/Contract/NoComplete/{ProjectId}',[
+        'uses'=>'ProjectsController@NoComplete',
+        'as'=>'NoComplete'
+    ]);
+    Route::get('/Terminate/Contract/{ChatId}',[
+        'uses'=>'ProjectsController@terminateContract',
+        'as'=>'terminateContract'
+    ]);
     Route::get('/Submit/Proposal/{projectId}',[
         'uses'=>'JobsController@Proposal',
         'as'=>'proposalPost'
@@ -133,5 +149,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/Messages/{UserId}/{ProjectId}',[
         'uses'=>'MessagesController@store',
         'as'=>'message.post'
+    ]);
+    Route::get('/Payments/Statements',[
+        'uses'=>'PaymentsController@index',
+        'as'=>'statement'
+    ]);
+    Route::get('/Withdrawal/',[
+        'uses'=>'PaymentsController@withdraw',
+        'as'=>'withdraw'
     ]);
 });

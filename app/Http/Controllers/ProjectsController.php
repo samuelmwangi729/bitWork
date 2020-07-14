@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Str;
 use Auth;
-use App\{Projects,Proposal,MessagesSender,Messages,Milestone,HourTracker,Balance};
+use App\{Projects,Proposal,MessagesSender,Messages,Milestone,HourTracker,Balance,Payment};
 use Session;
 
 class ProjectsController extends Controller
@@ -230,6 +230,61 @@ class ProjectsController extends Controller
 
 
     }
+    protected function completeContract(){
+        $ChatId=request()->ChatId;
+        $isValid=MessagesSender::where('ChatId','=',$ChatId)->get()->first();
+        if(is_null($isValid)){
+            Session::flash('error','Freelancer Is Not Available At The Moment');
+            return back();
+        }else{
+            $project=Messages::where('ChatId','=',$ChatId)->get()->first();
+            $projectId=$project->Project;
+            $freelancer=$project->To;
+            $from=$project->From;
+            $isAwarded=Messages::where([
+                ['From','=',$from],
+                ['To','=',$freelancer],
+                ['Attachment','=',3]
+            ])->get()->first();
+            if($isAwarded->To ==$freelancer && $project->From==Auth::user()->UserId)
+                Messages::create([
+                    'To'=>$freelancer,
+                    'From'=>$from,
+                    'Project'=>$projectId,
+                    'ChatId'=>$ChatId,
+                    'Message'=>$project->From .' Has Requested To Mark the Project  '.$projectId.'  As Complete',
+                    'Attachment'=>'7',
+                ]);
+                return back();
+            }
+    }
+    protected function AgreeContract(){
+        $projectId=request()->ProjectId;
+        $project=Projects::where('ProjectId','=',$projectId)->get()->first();
+        $isValid=MessagesSender::where('ChatId','=',request()->ChatId)->get()->first();
+      if(is_null($isValid)){
+          Session::flash('error','Unknown Error Occurred');
+          return back();
+      }
+     if($project->AwardedTo==Auth::user()->UserId){
+         //mark the project complete 
+         $project->Status=1;
+         $project->save();
+         Messages::create([
+            'To'=>Auth::user()->UserId,
+            'From'=>$project->ClientId,
+            'Project'=>$project->ProjectId,
+            'ChatId'=>request()->ChatId,
+            'Message'=>$project->ProjectId .' Has Been Marked Complete By Agreement By Bith Parties',
+            'Attachment'=>'8',
+        ]);
+        return back();
+     }else {
+         Session::flash('error','Unknown Error Occurred');
+         return back();
+     }
+
+    }
     protected function accept(){
         $ChatId=request()->ChatId;
         // dd($ChatId);
@@ -281,6 +336,20 @@ class ProjectsController extends Controller
            }else{
             $Release->Status=1;
             $Release->save();
+            //post the blance in the persons account 
+            Payment::create([
+                'PaymentId'=>Str::random(10),
+                'Freelancer'=>$freelancer,
+                'Client'=>$clientId,
+                'ProjectId'=>$projectId,
+                'Amount'=>$Release->Amount,
+                'DateReleased'=>date('Y-m-d'),
+            ]);
+            //update the freelancer's balance 
+            $pDetails=Balance::where('UserId','=',$freelancer)->get()->first();
+            $NewBalance=$pDetails->Balance+$Release->Amount;
+            $pDetails->Balance=$NewBalance;
+            $pDetails->save();
               //then post the message on release of the milestone 
             Messages::create([
                 'To'=>$freelancer,
@@ -299,6 +368,10 @@ class ProjectsController extends Controller
     protected function milestone(Request $request){
         // dd(request()->ProjectId);
         $isAwarded=Projects::where('ProjectId','=',request()->ProjectId)->get()->first();
+        if($isAwarded->Status==1){
+            Session::flash('error','Project Marked As Complete');
+            return back();
+        }
         $Freelancer=$isAwarded->AwardedTo;
         if($Freelancer==Auth::user()->UserId){
             //Submit the Milestone
@@ -330,13 +403,16 @@ class ProjectsController extends Controller
     public function TrackHours(Request $request){
        
         $isAwarded=Projects::where('ProjectId','=',request()->ProjectId)->get()->first();
+        if($isAwarded->Status==1){
+            Session::flash('error','Unknown Error Occurred');
+            return back();
+        }
         $Freelancer=$isAwarded->AwardedTo;
         //get the proposal 
         $proposal=Proposal::where([
             ['ProjectId','=',request()->ProjectId],
             ['UserId','=',Auth::user()->UserId]
         ])->get()->first();
-        dd($proposal);
         $budget=$proposal->Budget;
         $totalAmount=$budget*$request->HoursWorked;
         //post the hours to the database
@@ -398,6 +474,14 @@ class ProjectsController extends Controller
         $UserBalance->Save();
         $isExist->Status=1;
         $isExist->save();
+        Payment::create([
+            'PaymentId'=>Str::random(10),
+            'Freelancer'=>$Project->AwardedTo,
+            'Client'=>$Project->ClientId,
+            'ProjectId'=>$projectId,
+            'Amount'=>$isExist->Amount,
+            'DateReleased'=>date('Y-m-d'),
+        ]);
         Session::flash('success','Hours Successfully Approved');
         return back();
     }

@@ -31,19 +31,24 @@
                 <li class="header">Proposals</li>
                 <li class="body">
                     <ul class="menu list-unstyled">
-                        <li>
-                            <a href="javascript:void(0);">
-                                <div class="icon-circle bg-blue"><i class="zmdi zmdi-account"></i></div>
-                                <div class="menu-info">
-                                    <h4>8 New Members joined</h4>
-                                    <p><i class="zmdi zmdi-time"></i> 14 mins ago </p>
-                                </div>
-                            </a>
-                        </li>
 
+                        @if(is_null(App\Proposal::where('UserId','=',Auth::user()->UserId)->get()))
+                        @else
+                            @foreach (App\Proposal::where('UserId','=',Auth::user()->UserId)->get() as $proposal )
+                            <li>
+                                <a href="javascript:void(0);">
+                                    <div class="icon-circle"><span class="ti-write" style="color:red;padding-top:20px;font-size:30px"></span></div>
+                                    <div class="menu-info">
+                                        <h6>Project ID: {{ $proposal->ProjectId }}</h6>
+                                        <p><i class="zmdi zmdi-time"></i> {{ ($proposal->created_at)->toFormattedDateString() }} &nbsp; <i class="fa fa-bitcoin" style="color:gold;font-size:20px"></i>&nbsp;{{ $proposal->Budget }} BTC</p>
+                                    </div>
+                                </a>
+                            </li>
+                            @endforeach
+                        @endif
                     </ul>
                 </li>
-                <li class="footer"> <a href="javascript:void(0);">View All Proposals</a> </li>
+                <li class="footer"> <a href="{{ route('proposed') }}">View All Proposals</a> </li>
             </ul>
         </li>
         <!-- End Proposal-->
@@ -55,19 +60,23 @@
                 <li class="header">Contracts</li>
                 <li class="body">
                     <ul class="menu list-unstyled">
-                        <li>
-                            <a href="javascript:void(0);">
-                                <div class="icon-circle bg-blue"><i class="zmdi zmdi-account"></i></div>
-                                <div class="menu-info">
-                                    <h4>8 New Members joined</h4>
-                                    <p><i class="zmdi zmdi-time"></i> 14 mins ago </p>
-                                </div>
-                            </a>
-                        </li>
-
+                        @if(is_null(App\Projects::where('AwardedTo','=',Auth::user()->UserId)->get()))
+                        @else
+                            @foreach (App\Projects::where('AwardedTo','=',Auth::user()->UserId)->get() as $contract )
+                            <li>
+                                <a href="javascript:void(0);">
+                                    <div class="icon-circle"><span class="ti-bookmark-alt" style="color:red;padding-top:20px;font-size:30px"></span></div>
+                                    <div class="menu-info">
+                                        <h4>{{ $contract->ProjectTitle }}</h4>
+                                        <p><i class="fa fa-bitcoin" style="color:gold;font-size:20px"></i> &nbsp; {{ $contract->Budget }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                            @endforeach
+                        @endif
                     </ul>
                 </li>
-                <li class="footer"> <a href="javascript:void(0);">View All Contracts</a> </li>
+                <li class="footer"> <a href="{{ route('running') }}">View All Contracts</a> </li>
             </ul>
         </li>
         <!--End Contract-->

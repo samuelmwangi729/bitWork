@@ -105,7 +105,6 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal" style="background-color:#f2174f">Dismiss</button>
                                                     </div>
-                                                </div>
                                             </div>
                                         </div>
                                         <!--End Modal-->
@@ -158,9 +157,8 @@
                                                 </div>
                                             </div>
                                     </div>
-                                    <!--End Modal-->
-                                           
-                                @endif
+                                    <!--End Modal-->      
+                                    @endif
                                     
                                 </div>
                                 <a href="javascript:void(0);" class="list_btn btn btn-info btn-round float-md-right"><i class="zmdi zmdi-comments"></i></a>
@@ -179,8 +177,9 @@
                                         @elseif($message->Attachment==4)
                                                 @if($message->From==Auth::user()->UserId)
                                                 <div class="card w_data_1">
+                                                    <br>
                                                     <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
-                                                        You Created MileStone For the Project {{ $projectId }}
+                                                        You  Have Created MileStone For the Project {{ $projectId }}
                                                        <br>
                                                     </div>
                                                 </div>
@@ -242,6 +241,23 @@
                             <div class="body" style="border:2px solid red; background-color:whitesmoke;height:200px">
                                 <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
                                 <span class="pull-right">{{ $message->Message }} </span>
+                            </div>
+                            @elseif($message->Attachment==7)
+                            <br>
+                            <div class="card w_data_1">
+                                <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                     {{ $message->Message }}. You  Agree?<br>
+                                    <a href="{{ route('AgreeComplete',[$projectId,$ChatId]) }}" class="btn btn-success">Yes</a>
+                                    <a href="{{ route('NoComplete',[$projectId]) }}" class="btn" style="background-color:black">No</a>
+                                </div>
+                            </div>
+                            @elseif($message->Attachment==8)
+                            <br>
+                            <div class="card w_data_1">
+                                <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                     {{ $message->Message }}.<br>
+                                     Want to leave  review on the Client? Do it <a class="btn btn-warning" href="#">Here</a>
+                                </div>
                             </div>
                             @else
                                 <li>
