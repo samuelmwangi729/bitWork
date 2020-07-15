@@ -29,7 +29,11 @@
                                 <li>
                                     {{-- <a href="{{ route('messageFrom',[$projectId,$message->From]) }}"> --}}
                                         <a href="#">
-                                        <img src="{{ asset('assets/images/xs/avatar1.jpg') }}" alt="avatar" />
+                                       @if(is_null(App\Accounts::where('UserId','=',App\User::where('UserId','=',$message->From)->get()[0]->UserId)->get()->first()->Profile ))
+                                    <img src="{{ asset('assets/images/default.png') }}" alt="{{config('app.name')}}" height="40px" />
+                                    @else
+                                    <img src="{{ asset(App\Accounts::where('UserId','=',App\User::where('UserId','=',$message->From)->get()[0]->UserId)->get()->first()->Profile ) }}" alt="{{config('app.name')}}" height="40px"  />
+                                    @endif
                                         <div class="about">
                                             <div class="name">{{ App\User::where('UserId','=',$message->From)->get()[0]->name }}</div>
                                             <div class="status online"> <i class="zmdi zmdi-circle"></i>&nbsp;{{ ($message->created_at)->toFormattedDateString() }} </div>
@@ -42,18 +46,27 @@
                         <div class="chat_window body">
                             <div class="chat-header">
                                 <div class="user">
-                                    <img src="{{ asset('assets/images/xs/avatar2.jpg') }}" alt="avatar" />
+                                    @if(is_null(App\Accounts::where('UserId','=',App\User::where('UserId','=',$message->From)->get()[0]->UserId)->get()->first()->Profile ))
+                                    <img src="{{ asset('assets/images/default.png') }}" alt="{{config('app.name')}}" />
+                                    @else
+                                    <img src="{{ asset(App\Accounts::where('UserId','=',App\User::where('UserId','=',$message->From)->get()[0]->UserId)->get()->first()->Profile ) }}" alt="{{config('app.name')}}" />
+                                    @endif
                                     <div class="chat-about">
                                         {{-- <div class="chat-with"></div> --}}
                                         <div class="chat-with">{{App\User::where('UserId','=',$message->From)->get()[0]->name }}</div>
-                                        <div class="chat-num-messages"><small>ProjectId:<a href="{{ route('singleProject',[$projectId]) }}">{{ $projectId }}</a></small></div>
+                                        <div class="chat-num-messages" ><small>ProjectId:<a href="{{ route('singleProject',[$projectId]) }}">{{ $projectId }}</a></small></div>
                                     </div>
-                                </div>
                                     @if($payment=='By Project') 
-                                        <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Paid By Project</a>
+                                        {{-- <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Paid By Project</a> --}}
+                                        <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
+
                                     @endif
                                     @if($payment=='By Milestone') 
-                                        <button  data-toggle="modal" data-target="#smallModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Create Milestone</button>
+                                    @if($project->Status==1)
+                                    <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
+                                    @else
+                                       <button  data-toggle="modal" data-target="#smallModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Create Milestone</button>
+                                    @endif
                                         <!--Modal Start-->
                                         <div class="modal fade modal-col-pink" id="smallModal" tabindex="-1" role="dialog">
                                             <div class="modal-dialog modal-md" role="document">
@@ -110,7 +123,11 @@
                                         <!--End Modal-->
                                     @endif
                                     @if($payment=='Hourly') 
-                                    <button  data-toggle="modal" data-target="#hoursModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Track Hours</button>
+                                        @if($project->Status==1)
+                                        <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
+                                        @else
+                                        <button  data-toggle="modal" data-target="#hoursModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Track Hours</button>
+                                        @endif
                                     <!--Modal Start-->
                                     <div class="modal fade modal-col-pink" id="hoursModal" tabindex="-1" role="dialog">
                                         <div class="modal-dialog modal-md" role="document">
@@ -159,7 +176,6 @@
                                     </div>
                                     <!--End Modal-->      
                                     @endif
-                                    
                                 </div>
                                 <a href="javascript:void(0);" class="list_btn btn btn-info btn-round float-md-right"><i class="zmdi zmdi-comments"></i></a>
                             </div>
@@ -292,7 +308,7 @@
                                         </div>
                                         <input type="hidden" name="ChatId" value="{{ $ChatId }}" required>
                                         <input type="hidden" name="To" value="{{ $from->UserId }}" required>
-                                        <input type="text" class="form-control" placeholder="Type Your Message To {{App\User::where('UserId','=',$message->To)->get()[0]->name }}" id="message" name="Message" required>
+                                        <input type="text" class="form-control" placeholder="Type Your Message To {{App\User::where('UserId','=',$message->From)->get()[0]->name }}" id="message" name="Message" required>
                                     </div> 
                                 </form>                                                           
                             </div>

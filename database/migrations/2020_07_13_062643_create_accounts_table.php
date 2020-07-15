@@ -18,6 +18,7 @@ class CreateAccountsTable extends Migration
             $table->string('UserId');
             $table->longText('Skills')->nullable();
             $table->string('PaymentAddress')->nullable();
+            $table->string('Profile')->nullable();
             $table->longText('Description')->nullable();
             $table->timestamps();
         });

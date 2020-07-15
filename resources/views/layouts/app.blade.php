@@ -48,7 +48,7 @@
 
     <!-- Start header -->
     <header class="top-header">
-        <nav class="navbar header-nav navbar-expand-sm">
+        <nav class="navbar header-nav navbar-expand-md">
             <div class="container-fluid" style="height:50px">
                 <a class="navbar-brand" href="/"><img src="{{ asset('img/logo.png') }}" alt="{{ config('app.name') }}" height="60px"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-wd" aria-controls="navbar-wd" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,7 +131,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <p class="crp">© 2019 Business . All Rights Reserved.</p>
+                    <p class="crp">© 2020 {{ config('app.name') }} . All Rights Reserved.</p>
                     <ul class="bottom_menu">
                         <li><a href="#">Term of Service</a></li>
                         <li><a href="#">Privacy</a></li>

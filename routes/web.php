@@ -26,6 +26,18 @@ Route::group(['middleware' => ['auth']], function () {
         'uses'=>'ProfileController@index',
         'as'=>'account'
     ]);
+    Route::Post('/Account/Bio',[
+        'uses'=>'ProfileController@Bio',
+        'as'=>'Bio'
+    ]);
+    Route::Post('/Account/Photo',[
+        'uses'=>'ProfileController@Photo',
+        'as'=>'Photo'
+    ]);
+    Route::Post('/Account/Bio/Update/{UserId}',[
+        'uses'=>'ProfileController@update',
+        'as'=>'EditBio'
+    ]);
     Route::get('/Post/Project',[
         'uses'=>'ProjectsController@create',
         'as'=>'projects.add'
@@ -97,6 +109,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/Contract/NoComplete/{ProjectId}',[
         'uses'=>'ProjectsController@NoComplete',
         'as'=>'NoComplete'
+    ]);
+    Route::get('/Account/Profile',[
+        'uses'=>'AccountsController@index',
+        'as'=>'profile'
     ]);
     Route::get('/Terminate/Contract/{ChatId}',[
         'uses'=>'ProjectsController@terminateContract',

@@ -10,6 +10,7 @@ class Accounts extends Model
         'UserId',
         'Skills',
        'PaymentAddress',
+       'Accounts',
         'Description',
     ];
 }

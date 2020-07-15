@@ -200,7 +200,7 @@
     </div>
 	<!-- end section -->
 	<!-- section -->
-    <div class="section layout_padding" style="background-color:#e5e2e0">
+    <div class="section layout_padding" style="background-color:#150646">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">

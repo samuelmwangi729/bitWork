@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\{Accounts,Skills,User};
+use Auth;
+use Session;
+use Str;
 class ProfileController extends Controller
 {
     /**
@@ -13,7 +16,13 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        return view('User.account');
+        $user=User::where('UserId','=',Auth::user()->UserId)->get()->first();
+        $skills=Skills::where('UserId','=',Auth::user()->UserId)->get();
+        $account=Accounts::where('UserId','=',Auth::user()->UserId)->get()->first();
+        return view('User.account')
+        ->with('user',$user)
+        ->with('skills',$skills)
+        ->with('account',$account);
     }
 
     /**
@@ -21,9 +30,45 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function Bio(Request $request)
     {
-        //
+        $this->validate($request,[
+            'Bio'=>'required',
+            'PaymentId'=>'required'
+        ]);
+        $account=Accounts::where('UserId','=',Auth::user()->UserId)->get()->first();
+        $account->Description=$request->Bio;
+        $account->PaymentAddress=$request->PaymentId;
+        $account->save();
+        Session::flash('success','Bio Successfully Updated');
+        return back();
+    }
+    protected function Photo(Request $request){
+        $this->validate($request,[
+            'Photo'=>'required'
+        ]);
+        $file=$request->Photo;
+        $extension=$file->getClientOriginalExtension();
+        $allowed=['jpg','png','jpeg'];
+        if(in_array($extension,$allowed)){
+            //process the file
+            $randName=Str::random('20');
+            $filename=time().$randName;
+            $newName=$filename.'.'.$extension;
+            //this is the new file  name 
+            $profilePhoto='i4TYgefmIML09O/'.$newName;
+            //upload into the directory
+            $file->move('i4TYgefmIML09O',$newName);
+            //save into the database
+            $account=Accounts::where('UserId','=',Auth::user()->UserId)->get()->first();
+            $account->Profile=$profilePhoto;
+            $account->save();
+            Session::flash('success','Your Profile Photo Has Been Successfully Saved');
+            return back();
+        }else{
+            Session::flash('error','We only permit  .png, .jpg, .jpeg extensions');
+            return back();
+        }
     }
 
     /**
@@ -68,7 +113,16 @@ class ProfileController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request,[
+            'Bio'=>'required',
+            'PaymentId'=>'required'
+        ]);
+        $account=Accounts::where('UserId','=',Auth::user()->UserId)->get()->first();
+        $account->Description=$request->Bio;
+        $account->PaymentAddress=$request->PaymentId;
+        $account->save();
+        Session::flash('success','Bio Successfully Updated');
+        return back();
     }
 
     /**

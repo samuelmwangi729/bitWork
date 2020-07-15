@@ -1,11 +1,12 @@
 #nav-link {
-    color: white;
+    color: #f2174f;
     font-weight: bold;
-    background-color: #dededc;
+    background-color: #eaefe9;
+    display: inline;
 }
 
 .navbar {
-    background-color: #dededc
+    background-color: #eaefe9;
 }
 
 #nav-link:hover {

@@ -266,6 +266,10 @@ class ProjectsController extends Controller
           Session::flash('error','Unknown Error Occurred');
           return back();
       }
+      if($project->Status==1){
+          return back();
+          Session::flash('error','Project Already Completed');
+      }
      if($project->AwardedTo==Auth::user()->UserId){
          //mark the project complete 
          $project->Status=1;
