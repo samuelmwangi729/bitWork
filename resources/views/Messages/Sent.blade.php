@@ -95,6 +95,13 @@
                                                         Want to leave  review on the Freelancer? Do it <a class="btn btn-warning" href="#">Here</a>
                                                     </div>
                                                 </div>
+                                                @elseif($message->Attachment==3)
+                                                <br>
+                                                <div class="card w_data_1">
+                                                    <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                                        {{ $message->Message }}.<br>
+                                                    </div>
+                                                </div>
                                             @else
                                             <li class="clearfix">
                                                 <div class="status online message-data text-right">
@@ -112,8 +119,8 @@
                                                         We Have sent a request to {{ $to }}. They Have to Accept the Offer
                                                     </div>
                                                 @else
-                                                <div class="body" style="border:2px solid red; background-color:whitesmoke;height:100px">
-                                                    <span class="ti-receipt" style="font-size:20px;color:blue;font-weight:bold !important">&nbsp;{{ $message->Message }}</span>
+                                                <div class="body" style="border:2px solid red; background-color:whitesmoke;">
+                                                    <span class="ti-receipt" style="font-size:15px;color:blue;font-weight:bold !important">&nbsp;{{ $message->Message }} We recommended {{ $message->To }} to create a milestone/add at least some hours  within the project budget for security reasons. Amount will be put in escrow for  your security Also. Kindly Accept their Amount the propose</span>
                                                 </div>
                                                 @endif
                                                 @elseif($message->Attachment==4)

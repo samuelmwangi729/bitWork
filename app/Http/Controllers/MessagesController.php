@@ -31,7 +31,7 @@ class MessagesController extends Controller
         $isMessages=Messages::where([
             ['Project','=',$projectId]
         ])->get();
-        if(is_null($isMessages)){
+        if($isMessages->count()==0){
             $messages='None';
         }else{
             $messages=$isMessages;
@@ -44,7 +44,8 @@ class MessagesController extends Controller
         //is there a chat Id?
         $ChatId=MessagesSender::where([
             ['From','=',Auth::user()->UserId],
-            ['To','=',$to]
+            ['To','=',$to],
+            ['Status','=',0]
         ])->get()->first();
         if(is_null($ChatId)){
             $chatsId=null;

@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Str;
-use App\{Accounts,Balance};
+use App\{Accounts,Balance,Membership};
 class RegisterController extends Controller
 {
     /*
@@ -80,6 +80,10 @@ class RegisterController extends Controller
             'UserId'=>$userId,
             'Balance'=>'0',
             'Status'=>0,
+        ]);
+        Membership::create([
+            'UserId'=>$userId,
+            'Registered'=>date('Y-M-d'),
         ]);
         return User::create([
             'name' => $data['name'],

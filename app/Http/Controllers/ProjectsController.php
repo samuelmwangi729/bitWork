@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Str;
 use Auth;
-use App\{Projects,Proposal,MessagesSender,Messages,Milestone,HourTracker,Balance,Payment};
+use App\{Projects,Proposal,MessagesSender,Messages,Milestone,HourTracker,Balance,Payment,BitworkProfit,BitworkEscrow};
 use Session;
 
 class ProjectsController extends Controller
@@ -209,8 +209,52 @@ class ProjectsController extends Controller
             $isAwarded=Messages::where([
                 ['From','=',$from],
                 ['To','=',$freelancer],
+                ['Project','=',$projectId],
                 ['Attachment','=',3]
             ])->get()->first();
+            // dd($isAwarded);
+              //get the proposal amount and check it in the clients balance
+            $proposal=Proposal::where([
+                ['UserId','=',$freelancer],
+                ['ProjectId','=',$projectId]
+            ])->get()->first();
+            $checkBalance=Balance::where('UserId','=',$from)->get()->first();
+            $proposalAmount=$proposal->Budget;
+            //the  balance of the clients account 
+            $accountBalance=$checkBalance->Balance;
+            if($accountBalance<$proposalAmount){
+                Messages::create([
+                    'To'=>$freelancer,
+                    'From'=>$from,
+                    'Project'=>$projectId,
+                    'ChatId'=>$ChatId,
+                    'Message'=>'You have no enough funds to award your project. Kindly top up',
+                    'Attachment'=>'9',
+                ]);
+                return back();
+            }else{
+                   //then take the amount into escrow
+            $profit=$proposalAmount*0.2;
+            $ActualAmount=$proposalAmount-$profit;
+            if($proposal->PaidBy=='By Project'){
+                //get the amount and place it to escrow
+                BitworkProfit::create([
+                    'TransactionId'=>Str::random(10),
+                    'ProjectId'=>$projectId,
+                    'Amount'=>$profit,
+                    'Description'=>'20% service fee for the Project Awarded',
+                ]);
+                //post the amount to escrow
+                BitworkEscrow::create([
+                    'ProjectId'=>$projectId,
+                    'Client'=>$from,
+                    'Freelancer'=>$freelancer,
+                    'Amount'=>$ActualAmount,
+                ]);
+                //then update the users balance 
+                $checkBalance->Balance=$accountBalance-$proposalAmount;
+                $checkBalance->save();
+            }
             if(is_null($isAwarded)){
                 Messages::create([
                     'To'=>$freelancer,
@@ -221,6 +265,7 @@ class ProjectsController extends Controller
                     'Attachment'=>'3',
                 ]);
                 return back();
+            }
             }
             if($isAwarded->Attachment==3){
                 Session::flash('error','Kindlly Let the Freelancer respond. You already  Awarded The Project');
@@ -266,6 +311,8 @@ class ProjectsController extends Controller
           Session::flash('error','Unknown Error Occurred');
           return back();
       }
+      $isValid->Status=1;
+      $isValid->save();
       if($project->Status==1){
           return back();
           Session::flash('error','Project Already Completed');
@@ -274,12 +321,22 @@ class ProjectsController extends Controller
          //mark the project complete 
          $project->Status=1;
          $project->save();
+         //get the balance from escrow and update it the the client balanced
+         $escrowAmount=BitworkEscrow::where('ProjectId','=',$project->ProjectId)->get()->first();
+        $escAmount=$escrowAmount->Amount;
+        $user=Balance::where('UserId','=',Auth::user()->UserId)->get()->first();
+        $oldBalance=$user->Balance;
+        $user->Balance=$oldBalance+$escAmount;
+        $user->save();
+        //update the status of the escrow amount
+        $escrowAmount->Status=1;
+        $escrowAmount->save();
          Messages::create([
             'To'=>Auth::user()->UserId,
             'From'=>$project->ClientId,
             'Project'=>$project->ProjectId,
             'ChatId'=>request()->ChatId,
-            'Message'=>$project->ProjectId .' Has Been Marked Complete By Agreement By Bith Parties',
+            'Message'=>$project->ProjectId .' Has Been Marked Complete By Agreement By Both Parties',
             'Attachment'=>'8',
         ]);
         return back();
@@ -300,6 +357,7 @@ class ProjectsController extends Controller
             ['ProjectId','=',$projectId],
             ['AwardedTo','=',$freelancer]
         ])->get()->first();
+
         if(is_null($isAwarded)){
             $project=Projects::where([
                 ['ProjectId','=',$projectId],
@@ -341,6 +399,7 @@ class ProjectsController extends Controller
             $Release->Status=1;
             $Release->save();
             //post the blance in the persons account 
+            
             Payment::create([
                 'PaymentId'=>Str::random(10),
                 'Freelancer'=>$freelancer,
@@ -376,6 +435,7 @@ class ProjectsController extends Controller
             Session::flash('error','Project Marked As Complete');
             return back();
         }
+        dd($isAwarded);
         $Freelancer=$isAwarded->AwardedTo;
         if($Freelancer==Auth::user()->UserId){
             //Submit the Milestone
@@ -383,10 +443,25 @@ class ProjectsController extends Controller
                 ['From','=',$isAwarded->ClientId],
                 ['To','=',$Freelancer]
             ])->get()->first();
+            $profit=$request->MilestoneAmount*0.2;
+            $ActualAmount=$request->MilestoneAmount-$profit;
+            BitworkProfit::create([
+                'TransactionId'=>Str::random(10),
+                'ProjectId'=>request()->ProjectId,
+                'Amount'=>$profit,
+                'Description'=>'20% service fee for the Milestone  Created',
+            ]);
+            BitworkEscrow::create([
+                'ProjectId'=>request()->ProjectId,
+                'Client'=>$isAwarded->ClientId,
+                'Freelancer'=>$Freelancer,
+                'Amount'=>$ActualAmount,
+            ]);
+            //post the amount to escrow
             Milestone::create([
                 'ProjectId'=>request()->ProjectId,
                 'Name'=>$request->MilestoneName,
-                'Amount'=>$request->MilestoneAmount,
+                'Amount'=>$ActualAmount,
                 'Status'=>0
             ]);
             Messages::create([
@@ -394,7 +469,7 @@ class ProjectsController extends Controller
                 'From'=>$Freelancer,
                 'Project'=>request()->ProjectId,
                 'ChatId'=>$ChatId->ChatId,
-                'Message'=>$Freelancer.' Has Created A Milestone Milestone'.Str::upper($request->MilestoneName).' With Amount '.$request->MilestoneAmount.' BTC',
+                'Message'=>$Freelancer.' Has Created A Milestone Milestone'.Str::upper($request->MilestoneName).' With Amount '.$ActualAmount.' BTC. Amount In ESCROW',
                 'Attachment'=>'4',
             ]);
             Session::flash('success','Milestone Successfully Created');
@@ -419,11 +494,22 @@ class ProjectsController extends Controller
         ])->get()->first();
         $budget=$proposal->Budget;
         $totalAmount=$budget*$request->HoursWorked;
+        //get the 20% of the total Amount dd
+        $profit=$totalAmount*0.2;
+        //then the remaining amount is 80%
+        $remAmount=$totalAmount-$profit;
+        //post the profilt
+        BitworkProfit::create([
+            'TransactionId'=>Str::random(10),
+            'ProjectId'=>request()->ProjectId,
+            'Amount'=>$profit,
+            'Description'=>'20% service fee for the hours posted',
+        ]);
         //post the hours to the database
         HourTracker::create([
             'ProjectId'=>request()->ProjectId,
             'Hours'=>$request->HoursWorked,
-            'Amount'=>$totalAmount
+            'Amount'=>$remAmount
         ]);
         if($Freelancer==Auth::user()->UserId){
             //Submit the Milestone
@@ -437,7 +523,7 @@ class ProjectsController extends Controller
                 'From'=>$Freelancer,
                 'Project'=>request()->ProjectId,
                 'ChatId'=>$ChatId->ChatId,
-                'Message'=>$Freelancer.' Has Added '.$request->HoursWorked.'  of Work for your Project. Total  Amount For the Hours is  '.$totalAmount.' BTC',
+                'Message'=>$Freelancer.' Has Added '.$request->HoursWorked.'  of Work for your Project. Total  Amount For the Hours is  '.$remAmount.' BTC. We have Charged 20% as service fee',
                 'Attachment'=>'6',
             ]);
             Session::flash('success','Hours Successfully Added');

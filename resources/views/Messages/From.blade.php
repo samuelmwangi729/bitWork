@@ -46,139 +46,145 @@
                         <div class="chat_window body">
                             <div class="chat-header">
                                 <div class="user">
+                                    <!--Start user section-->
                                     @if(is_null(App\Accounts::where('UserId','=',App\User::where('UserId','=',$message->From)->get()[0]->UserId)->get()->first()->Profile ))
                                     <img src="{{ asset('assets/images/default.png') }}" alt="{{config('app.name')}}" />
                                     @else
                                     <img src="{{ asset(App\Accounts::where('UserId','=',App\User::where('UserId','=',$message->From)->get()[0]->UserId)->get()->first()->Profile ) }}" alt="{{config('app.name')}}" />
                                     @endif
+                                    <!-- end user section -->
                                     <div class="chat-about">
                                         {{-- <div class="chat-with"></div> --}}
                                         <div class="chat-with">{{App\User::where('UserId','=',$message->From)->get()[0]->name }}</div>
                                         <div class="chat-num-messages" ><small>ProjectId:<a href="{{ route('singleProject',[$projectId]) }}">{{ $projectId }}</a></small></div>
-                                    </div>
-                                    @if($payment=='By Project') 
-                                        {{-- <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Paid By Project</a> --}}
-                                        <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
+                                    
+                                        @if($payment=='By Project') 
+                                            {{-- <a href="#" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Paid By Project</a> --}}
+                                            <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
 
-                                    @endif
-                                    @if($payment=='By Milestone') 
-                                    @if($project->Status==1)
-                                    <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
-                                    @else
-                                       <button  data-toggle="modal" data-target="#smallModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Create Milestone</button>
-                                    @endif
-                                        <!--Modal Start-->
-                                        <div class="modal fade modal-col-pink" id="smallModal" tabindex="-1" role="dialog">
-                                            <div class="modal-dialog modal-md" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h4 class="title" id="smallModalLabel">Create Milestone for ProjectId  <u style="color:red">{{ $projectId }}</u></h4>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form">
-                                                            <form method="POST" action="{{ route('milestone',[$projectId]) }}" id="milestone">
-                                                                @csrf
-                                                                <div class="row">
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="label-control" for="MilestoneName"><i class="fa fa-tags"></i>&nbsp; MileStone Name</label>
-                                                                            <input type="text" name="MilestoneName" id="MilestoneName" class="form-control" placeholder="Eg. Upfront Payment" required>
+                                        @endif
+                                        @if($payment=='By Milestone') 
+                                                @if($project->Status==1)
+                                                <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
+                                                @else
+                                                <button  data-toggle="modal" data-target="#smallModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Create Milestone</button>
+                                                @endif
+                                                <!--Modal Start-->
+                                                <div class="modal fade modal-col-pink" id="smallModal" tabindex="-1" role="dialog">
+                                                    <div class="modal-dialog modal-md" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="title" id="smallModalLabel">Create Milestone for ProjectId  <u style="color:red">{{ $projectId }}</u></h4>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="form">
+                                                                    <form method="POST" action="{{ route('milestone',[$projectId]) }}" id="milestone">
+                                                                        @csrf
+                                                                        <div class="row">
+                                                                            <div class="col-sm-6">
+                                                                                <div class="form-group">
+                                                                                    <label class="label-control" for="MilestoneName"><i class="fa fa-tags"></i>&nbsp; MileStone Name</label>
+                                                                                    <input type="text" name="MilestoneName" id="MilestoneName" class="form-control" placeholder="Eg. Upfront Payment" required>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-6">
+                                                                                <div class="form-group">
+                                                                                    <label class="label-control" for="MilestoneName"><i class="fa fa-bitcoin"></i>&nbsp; MileStone Amount</label>
+                                                                                    <input number="text" name="MilestoneAmount" id="MilestoneAmount" class="form-control" placeholder="Eg. 0.003" required>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div class="col-sm-6">
-                                                                        <div class="form-group">
-                                                                            <label class="label-control" for="MilestoneName"><i class="fa fa-bitcoin"></i>&nbsp; MileStone Amount</label>
-                                                                            <input number="text" name="MilestoneAmount" id="MilestoneAmount" class="form-control" placeholder="Eg. 0.003" required>
+                                                                        <div class="row justify-content-center">
+                                                                            <script>
+                                                                            function v(){
+                                                                                let g=document.getElementById('MilestoneName');
+                                                                                let a=document.getElementById('MilestoneAmount');
+                                                                                let f=document.getElementById('milestone');
+                                                                                if(g.value=='' || a.value==''){
+                                                                                    $('#MilestoneName').addClass('form-control-danger');
+                                                                                    alert('please Fill in the details');
+                                                                                    return false;
+                                                                                }else{
+                                                                                    f.submit()
+                                                                                }
+                                                                            }
+                                                                            </script>
+                                                                            <button type="submit" class="btn" style="background-color:#f2174f;color:white !important" onclick="
+                                                                                v()
+                                                                                ">
+                                                                                Submit MileStone
+                                                                            </button>
                                                                         </div>
-                                                                    </div>
+                                                                    </form>
                                                                 </div>
-                                                                <div class="row justify-content-center">
-                                                                    <script>
-                                                                       function v(){
-                                                                         let g=document.getElementById('MilestoneName');
-                                                                         let a=document.getElementById('MilestoneAmount');
-                                                                         let f=document.getElementById('milestone');
-                                                                         if(g.value=='' || a.value==''){
-                                                                             alert('please Fill in the details');
-                                                                             return false;
-                                                                         }else{
-                                                                             f.submit()
-                                                                         }
-                                                                       }
-                                                                    </script>
-                                                                    <button type="submit" class="btn" style="background-color:#f2174f;color:white !important" onclick="
-                                                                        v()
-                                                                        ">
-                                                                        Submit MileStone
-                                                                    </button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal" style="background-color:#f2174f">Dismiss</button>
+                                                            </div>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal" style="background-color:#f2174f">Dismiss</button>
-                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <!--End Modal-->
-                                    @endif
+                                                <!--End Modal-->
+                                        @endif
                                     @if($payment=='Hourly') 
                                         @if($project->Status==1)
                                         <button   class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Project  Complete</button>
                                         @else
                                         <button  data-toggle="modal" data-target="#hoursModal" class="btn btn-success"><i class="fa fa-gift"></i>&nbsp; Track Hours</button>
-                                        @endif
-                                    <!--Modal Start-->
-                                    <div class="modal fade modal-col-pink" id="hoursModal" tabindex="-1" role="dialog">
-                                        <div class="modal-dialog modal-md" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h4 class="title" id="smallModalLabel">Track Hours for ProjectId  <u style="color:red">{{ $projectId }}</u></h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="form">
-                                                        <form method="POST" action="{{ route('hours',[$projectId]) }}" id="hours">
-                                                            @csrf
-                                                            <div class="row">
-                                                                <div class="col-sm-12">
-                                                                    <div class="form-group">
-                                                                        <label class="label-control" for="MilestoneName"><i class="fa fa-tags"></i>&nbsp; Hours Worked</label>
-                                                                        <input type="number" name="HoursWorked" id="HoursWorked" class="form-control" placeholder="Eg. 2" required>
+                                            @endif
+                                           <!-- Small Size -->
+                                                <div class="modal fade" id="hoursModal" tabindex="-1" role="dialog">
+                                                    <div class="modal-dialog modal-sm" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="title" id="smallModalLabel">Track Hours for ProjectId  <u style="color:red">{{ $projectId }}</u></h4>
+                                                            </div>
+                                                            <div class="modal-body"> <form method="POST" action="{{ route('hours',[$projectId]) }}" id="hours">
+                                                                @csrf
+                                                                <div class="row">
+                                                                    <div class="col-sm-12">
+                                                                        <div class="form-group">
+                                                                            <label class="label-control" for="MilestoneName"><i class="fa fa-tags"></i>&nbsp; Hours Worked</label>
+                                                                            <input type="number" name="HoursWorked" id="HoursWorked" class="form-control" placeholder="Eg. 2" required>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
+                                                                <div class="row justify-content-center">
+                                                                    <script>
+                                                                    function v(){
+                                                                        let g=document.getElementById('HoursWorked');
+                                                                        let f=document.getElementById('hours');
+                                                                        if(g.value==''){
+                                                                            // $('#HoursWorked').removeClass('form-control');
+                                                                            $('#HoursWorked').addClass('form-control-danger');
+                                                                            alert('please Fill in the details');
+                                                                            return false;
+                                                                        }else{
+                                                                            f.submit()
+                                                                        }
+                                                                    }
+                                                                    </script>
+                                                                    <button type="submit" class="btn" style="background-color:#f2174f;color:white !important" onclick="
+                                                                        v()
+                                                                        ">
+                                                                        Submit Hours
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Dismiss</button>
                                                             </div>
-                                                            <div class="row justify-content-center">
-                                                                <script>
-                                                                   function v(){
-                                                                     let g=document.getElementById('HoursWorked');
-                                                                     let f=document.getElementById('hours');
-                                                                     if(g.value==''){
-                                                                         alert('please Fill in the details');
-                                                                         return false;
-                                                                     }else{
-                                                                         f.submit()
-                                                                     }
-                                                                   }
-                                                                </script>
-                                                                <button type="submit" class="btn" style="background-color:#f2174f;color:white !important" onclick="
-                                                                    v()
-                                                                    ">
-                                                                    Submit Hours
-                                                                </button>
-                                                            </div>
-                                                        </form>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal" style="background-color:#f2174f">Dismiss</button>
-                                                </div>
-                                            </div>
-                                    </div>
-                                    <!--End Modal-->      
+                                                <!--Everything in the modal is balanced -->
+                                                <!--End Modal-->
                                     @endif
                                 </div>
                                 <a href="javascript:void(0);" class="list_btn btn btn-info btn-round float-md-right"><i class="zmdi zmdi-comments"></i></a>
                             </div>
+                        </div>
                             <hr>
                             <ul class="chat-history">
                               @foreach($myMessages as $message)
@@ -187,7 +193,21 @@
                                         <div class="card w_data_1">
                                             <div class="body" style="border:2px solid red; background-color:whitesmoke;height:200px">
                                                 <span class="ti-medall" style="font-size:70px;color:blue !important"></span>
-                                                <span class="pull-right" style="font-weight:bold;"> Congratulations!!! You Have Accepted  {{  $message->To }} Project. You Can Now Start Working</span>
+                                                <small class="pull-right" style="font-weight:bold;"> Congratulations!!! You Have Accepted  {{  $message->To }} Project. 
+                                                    We recommended You to create a milestone/add at least some hours  within the project budget for security reasons.
+                                                     Amount will be put in escrow.
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="card w_data_1">
+                                            <div class="body" style="border:2px solid red; background-color:whitesmoke;height:100px">
+                                                <span class="ti-medall" style="font-size:40px;color:blue !important"></span>
+                                                <small class="pull-right" style="font-weight:bold;"> 
+                                                    @if(is_null( App\BitworkEscrow::where([['ProjectId','=',$message->Project],['Status','=',0]] )->get()->first()))
+                                                    @else
+                                                        Amount {{  App\BitworkEscrow::where([['ProjectId','=',$message->Project],['Status','=',0]] )->get()->first()->Amount }} BTC Automatically Put in Escrow. Work Without Worry. 
+                                                    @endif
+                                                </small>
                                             </div>
                                         </div>
                                         @elseif($message->Attachment==4)
@@ -273,6 +293,13 @@
                                 <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
                                      {{ $message->Message }}.<br>
                                      Want to leave  review on the Client? Do it <a class="btn btn-warning" href="#">Here</a>
+                                </div>
+                            </div>
+                            @elseif($message->Attachment==9)
+                            <br>
+                            <div class="card w_data_1">
+                                <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                     Please Wait a bit while i top up my Account. Will let you know When I am Done
                                 </div>
                             </div>
                             @else

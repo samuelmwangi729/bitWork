@@ -70,9 +70,16 @@
                              @if($message->From == Auth::user()->UserId)
                                 @if($message->Attachment==3)
                                     @if($message->From==Auth::user()->UserId)
-                                        <div class="well well-primary well-md text-center" style="background-color:red;color:white">
-                                            We Have sent a request to {{ $to }}. They Have to Accept the Offer
-                                        </div>
+                                    <br>
+                                    <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                        We Have sent a request to {{ $to }}. They Have to Accept the Offer
+                                       <br>
+                                    </div>
+                                    @elseif($message->Attachment==9)
+                                    <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                       {{$message->Message}}
+                                       <br>
+                                    </div>
                                     @else
                                         <div class="card w_data_1">
                                             <div class="body">
@@ -83,6 +90,13 @@
                                         </div>
                                     @endif
                                 @else
+                                        @if($message->Attachment==9)
+                                        <br>
+                                            <div class="body" style="border:2px solid blue; background-color:#f2174f;color:white">
+                                            {{$message->Message}}. We have notified the Freelancer to give you some time to top up your Account
+                                            <br>
+                                            </div>
+                                            @else
                                 <li class="clearfix">
                                     <div class="status online message-data text-right">
                                         <span class="time">{{ ($message->created_at) }}</span>
@@ -91,6 +105,7 @@
                                     </div>
                                     <div class="message other-message @if(Auth::user()->UserId == $message->To) pull-right @else my-message @endif"><small>{{ $message->Message }}</small></div>
                                 </li>
+                                @endif
                                 @endif
                              @else
                             <li>
