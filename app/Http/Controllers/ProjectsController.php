@@ -386,6 +386,13 @@ class ProjectsController extends Controller
         $projectId=$details->Project;
         $freelancer=$details->To;
         $clientId=$details->From;
+        //update the amount in escrow
+        $inEscrow=BitworkEscrow::where([
+            ['ProjectId','=',$projectId],
+            ['Status','=','0']
+        ])->get()->first();
+        $inEscrow->Status=1;
+        $inEscrow->save();
         //then check if the person releasing the milestone is the owner of the project
         if($clientId==Auth::user()->UserId){
             $Release=Milestone::where([
@@ -435,7 +442,6 @@ class ProjectsController extends Controller
             Session::flash('error','Project Marked As Complete');
             return back();
         }
-        dd($isAwarded);
         $Freelancer=$isAwarded->AwardedTo;
         if($Freelancer==Auth::user()->UserId){
             //Submit the Milestone

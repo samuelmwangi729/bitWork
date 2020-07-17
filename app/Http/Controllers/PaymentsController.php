@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use Session;
-use App\{Payment,Accounts};
+use App\{Payment,Accounts,PaymentsPlatforms,Plans};
 class PaymentsController extends Controller
 {
     /**
@@ -36,11 +36,19 @@ class PaymentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function platform()
     {
-        //
+        $platforms=PaymentsPlatforms::all();
+        return view('Payments.Add')->with('platforms',$platforms);
     }
-
+    protected function storePlatforms(Request $request){
+        $this->validate($request,[
+            'Platform'=>'required|unique:payments_platforms'
+        ]);
+        PaymentsPlatforms::create($request->all());
+        Session::flash('success','Payment Method Created');
+        return back();
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -94,6 +102,22 @@ class PaymentsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $platform=PaymentsPlatforms::find($id);
+        $platform->destroy($id);
+        Session::flash('error','The Platform Successfully removed');
+        return back();
     }
+    //to handle the btc payments 
+    //to handle paypal gateway
+    protected function PaywithPaypal(){
+        $membership=Plans::where('Profile','=',request()->Profile)->get()->first();
+        if(is_null($membership)){
+            return back()->with('message','Membership Plan Not found');
+        }else{
+            $amount=$membership->Amount;
+            dd($amount*9000);
+        }
+        //get the membership Eg. Bronze etc
+    }
+    //to handle Credit Card Payment
 }

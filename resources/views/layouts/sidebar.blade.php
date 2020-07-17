@@ -41,6 +41,15 @@
                 </ul>
             </li>  
             @endif
+            @if(Auth::user()->AccountType==1)
+            <li>
+                <a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-cog"></i><span>Settings</span></a>
+                <ul class="ml-menu">
+                    <li><a href="{{ route('MembershipProfiles') }}">Manage  Profiles</a></li>
+                    <li><a href="{{ route('payments') }}">Manage  Payment Methods</a></li>
+                </ul>
+            </li>  
+            @endif
             <li><a href="javascript:void(0);" class="menu-toggle"><i class="fa fa-briefcase"></i><span>Browse Jobs</span></a>
                 <ul class="ml-menu">
                     <li><a href="{{ route('jobs') }}">View Jobs</a></li>

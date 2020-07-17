@@ -200,16 +200,16 @@
                                             </div>
                                         </div>
                                         <div class="card w_data_1">
+                                            @if(is_null( App\BitworkEscrow::where([['ProjectId','=',$message->Project],['Status','=',0]] )->get()->first()))
+                                            @else
                                             <div class="body" style="border:2px solid red; background-color:whitesmoke;height:100px">
                                                 <span class="ti-medall" style="font-size:40px;color:blue !important"></span>
                                                 <small class="pull-right" style="font-weight:bold;"> 
-                                                    @if(is_null( App\BitworkEscrow::where([['ProjectId','=',$message->Project],['Status','=',0]] )->get()->first()))
-                                                    @else
-                                                        Amount {{  App\BitworkEscrow::where([['ProjectId','=',$message->Project],['Status','=',0]] )->get()->first()->Amount }} BTC Automatically Put in Escrow. Work Without Worry. 
-                                                    @endif
                                                 </small>
                                             </div>
                                         </div>
+                                        Amount {{  App\BitworkEscrow::where([['ProjectId','=',$message->Project],['Status','=',0]] )->get()->first()->Amount }} BTC Automatically Put in Escrow. Work Without Worry. 
+                                        @endif
                                         @elseif($message->Attachment==4)
                                                 @if($message->From==Auth::user()->UserId)
                                                 <div class="card w_data_1">

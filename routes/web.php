@@ -19,7 +19,22 @@ Route::get('/',[
 ]);
 
 Auth::routes();
-
+Route::get('/Membership/Plans',[
+    'uses'=>'MembershipController@index',
+    'as'=>'membership'
+]);
+Route::get('/Bronze',[
+    'uses'=>'MembershipController@Bronze',
+    'as'=>'bronze'
+]);
+Route::get('/Silver',[
+    'uses'=>'MembershipController@Silver',
+    'as'=>'silver'
+]);
+Route::get('/Gold',[
+    'uses'=>'MembershipController@Gold',
+    'as'=>'gold'
+]);
 Route::get('/Dashboard/Index', 'HomeController@index')->name('home');
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/Account/Index',[
@@ -49,6 +64,34 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/Projects/Index',[
         'uses'=>'JobsController@index',
         'as'=>'jobs'
+    ]);
+    Route::get('/Membership/Profiles',[
+        'uses'=>'MembershipController@newPlan',
+        'as'=>'MembershipProfiles'
+    ]);
+    Route::get('/Payments/Profiles',[
+        'uses'=>'PaymentsController@platform',
+        'as'=>'payments'
+    ]);
+    Route::post('/Payments/Plaforms',[
+        'uses'=>'PaymentsController@storePlatforms',
+        'as'=>'platform.post'
+    ]);
+    Route::get('/Pay/WithPaypal/{Profile}',[
+        'uses'=>'PaymentsController@PaywithPaypal',
+        'as'=>'paypal'
+    ]);
+    Route::get('/Platform/Delete/{id}',[
+        'uses'=>'PaymentsController@destroy',
+        'as'=>'platform.delete'
+    ]);
+    Route::post('/Plans/Post',[
+        'uses'=>'MembershipController@store',
+        'as'=>'plans.post'
+    ]);
+    Route::get('/Plan/Delete/{PlanId}',[
+        'uses'=>'MembershipController@destroy',
+        'as'=>'plans.delete'
     ]);
     Route::get('/Accept/{ChatId}',[
         'uses'=>'ProjectsController@accept',

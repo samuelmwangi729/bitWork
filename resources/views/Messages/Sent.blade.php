@@ -135,7 +135,7 @@
                                             @elseif($message->Attachment==5)
                                                 <div class="card w_data_1">
                                                     <div class="body" style="border:2px solid red; background-color:whitesmoke">
-                                                            {{ $message}}
+                                                            {{ $message->Message}}
                                                     </div>
                                                 </div>
                                             @elseif($message->Attachment==6)
