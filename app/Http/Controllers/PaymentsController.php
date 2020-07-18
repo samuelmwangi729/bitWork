@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use Session;
+ use App\Http\JTech\PesaPal\PesaPalIframe;
 use App\{Payment,Accounts,PaymentsPlatforms,Plans};
 class PaymentsController extends Controller
 {

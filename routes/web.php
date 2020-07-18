@@ -78,7 +78,7 @@ Route::group(['middleware' => ['auth']], function () {
         'as'=>'platform.post'
     ]);
     Route::get('/Pay/WithPaypal/{Profile}',[
-        'uses'=>'PaymentsController@PaywithPaypal',
+        'uses'=>'PayClient@index',
         'as'=>'paypal'
     ]);
     Route::get('/Platform/Delete/{id}',[
