@@ -58,6 +58,9 @@ class MembershipController extends Controller
             $membership=Membership::where('UserId','=',Auth::user()->UserId)->get()->first();
             $membership->MemberType='Bronze';
             $membership->Registered=date('Y-M-d');
+            //when will it expire 
+            //$today=date('Y-M-d);
+            //$expiry=$today->addWeeks(4);
             $membership->save();
             //send email to the user using php mailer
             //later
